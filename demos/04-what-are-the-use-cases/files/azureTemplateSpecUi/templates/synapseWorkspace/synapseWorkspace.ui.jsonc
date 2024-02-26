@@ -51,7 +51,7 @@
             {
               "name": "resourceScope",
               "type": "Microsoft.Common.ResourceScope",
-              "subscription": "{{allowedDeploymentSubscriptions}}",
+              "subscription": ["sub1","sub2"],
               "Location": {
                 "label": "Location",
                 "allowedValues": [
@@ -63,11 +63,11 @@
               "name": "changeId",
               "type": "Microsoft.Common.TextBox",
               "label": "Change ID",
-              "toolTip": "The ID of the Change this deployment is approved by. {{& $uiStrings.resourceTags.changeId.validationMessage}}",
+              "toolTip": "The ID of the Change this deployment is approved by. ID must follow the format: XX.XXXX (e.g. 23.10027)",
               "constraints": {
                 "required": true,
-                "regex": "{{& $uiStrings.resourceTags.changeId.regex}}",
-                "validationMessage": "{{& $uiStrings.resourceTags.changeId.validationMessage}}"
+                "regex": "^\\d{2}.\\d{4}$",
+                "validationMessage": "ID must follow the format: XX.XXXX (e.g. 23.10027)"
               },
               "visible": true
             },
@@ -75,11 +75,11 @@
               "name": "name",
               "type": "Microsoft.Common.TextBox",
               "label": "Synapse Analytics Workspace Name",
-              "toolTip": "The name of the Synapse Workspace to be deployed. {{& $uiStrings.synapseWorkspace.name.validationMessage}}",
+              "toolTip": "The name of the Synapse Workspace to be deployed. Name can contain: lowercase letters, hyphens, numbers. It can't start or end with hyphens. It cannot be longer than 50 characters",
               "constraints": {
                 "required": true,
-                "regex": "{{& $uiStrings.synapseWorkspace.name.regex}}",
-                "validationMessage": "{{& $uiStrings.synapseWorkspace.name.validationMessage}}"
+                "regex": "^[a-z0-9][a-z0-9-]{1,48}[a-z0-9]$",
+                "validationMessage": "Name can contain: lowercase letters, hyphens, numbers. It can't start or end with hyphens. It cannot be longer than 50 characters"
               },
               "visible": true
             },
@@ -87,11 +87,11 @@
               "name": "resourceGroupName",
               "type": "Microsoft.Common.TextBox",
               "label": "Resource Group Name",
-              "toolTip": "The name of the Resource Group where Synapse Workspace will be deployed, it will be deployed if not exist. {{& $uiStrings.resourceGroup.name.validationMessage}}",
+              "toolTip": "The name of the Resource Group where Synapse Workspace will be deployed, it will be deployed if not exist. Name can contain: underscores, hyphens, periods, letters, digits. It cannot be longer than 90 characters",
               "constraints": {
                 "required": true,
-                "regex": "{{& $uiStrings.resourceGroup.name.regex}}",
-                "validationMessage": "{{& $uiStrings.resourceGroup.name.validationMessage}}"
+                "regex": "^[-\\w\\._\\(\\)]{1,90}$",
+                "validationMessage": "Name can contain: underscores, hyphens, periods, letters, digits. It cannot be longer than 90 characters"
               },
               "visible": true
             },
@@ -99,11 +99,11 @@
               "name": "managedResourceGroupName",
               "type": "Microsoft.Common.TextBox",
               "label": "Synapse Analytics Managed Resource Group Name",
-              "toolTip": "The name of the Synapse Analytics' Managed Resource Group. {{& $uiStrings.synapseWorkspace.managedRgName.validationMessage}}",
+              "toolTip": "The name of the Synapse Analytics' Managed Resource Group. Name can contain: letters, numbers, hyphens. It can't start or end with hyphens. It cannot be longer than 64 characters",
               "constraints": {
                 "required": true,
-                "regex": "{{& $uiStrings.synapseWorkspace.managedRgName.regex}}",
-                "validationMessage": "{{& $uiStrings.synapseWorkspace.managedRgName.validationMessage}}"
+                "regex": "^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]$",
+                "validationMessage": "Name can contain: letters, numbers, hyphens. It can't start or end with hyphens. It cannot be longer than 64 characters"
               },
               "visible": true
             },
@@ -317,11 +317,11 @@
                   "type": "Microsoft.Common.TextBox",
                   "label": "Key Name",
                   "defaultValue": "",
-                  "toolTip": "The name of the keyVault Key for workspace encryption. {{& $uiStrings.keyVault.keyName.validationMessage}}",
+                  "toolTip": "The name of the keyVault Key for workspace encryption. Name can contain: letters, numbers, hyphens. It can't start or end with hyphens. It cannot be longer than 64 characters",
                   "constraints": {
                     "required": true,
-                    "regex": "{{& $uiStrings.keyVault.keyName.regex}}",
-                    "validationMessage": "{{& $uiStrings.keyVault.keyName.validationMessage}}"
+                    "regex": "^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]$",
+                    "validationMessage": "Name can contain: letters, numbers, hyphens. It can't start or end with hyphens. It cannot be longer than 64 characters"
                   },
                   "visible": true
                 }
@@ -381,7 +381,7 @@
         "virtualNetworkName": "[steps('basics').privateAccess.vnetSelector]",
         "encryptionKeyVaultResourceId": "[steps('basics').encryption.keyVaultSelector.id]",
         "encryptionKeyName": "[steps('basics').encryption.KeyVaultKey]",
-        "environmentType": "{{environmentType}}"
+        "environmentType": "dev"
       },
       "kind": "Subscription",
       "location": "[steps('basics').resourceScope.location.name]",
