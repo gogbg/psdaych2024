@@ -1,0 +1,53 @@
+{
+  "$schema": "../schemas/uiStrings.schema.json",
+  "resourceTags": {
+    "changeId": {
+      "regex": "^\\d{2}.\\d{4}$",
+      "validationMessage": "ID must follow the format: XX.XXXX (e.g. 23.10027)"
+    }
+  },
+  "resourceGroup": {
+    "name": {
+      "regex": "^[-\\w\\._\\(\\)]{1,90}$",
+      "validationMessage": "Name can contain: underscores, hyphens, periods, letters, digits. It cannot be longer than 90 characters"
+    }
+  },
+  "synapseWorkspace": {
+    "name": {
+      "regex": "^[a-z0-9][a-z0-9-]{1,48}[a-z0-9]$",
+      "validationMessage": "Name can contain: lowercase letters, hyphens, numbers. It can't start or end with hyphens. It cannot be longer than 50 characters"
+    },
+    "managedRgName": {
+      "regex": "^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]$",
+      "validationMessage": "Name can contain: letters, numbers, hyphens. It can't start or end with hyphens. It cannot be longer than 64 characters"
+    }
+  },
+  "keyVault": {
+    "keyName": {
+      "regex": "^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]$",
+      "validationMessage": "Name can contain: letters, numbers, hyphens. It can't start or end with hyphens. It cannot be longer than 64 characters",
+    }
+  },
+  "applicationGateway": {
+    "name": {
+      "regex": "^(?!.{81,})DE-(?:DEV|QA|PRD)+-AGW-[A-Z0-9-_.]*[A-Z0-9_]+$",
+      "validationMessage": "The Application Gateway name should match the standard for PaaS naming (eg. DE-(DEV|QA|PROD)-AGW-APP001) and it cannot be longer than 80 characters. The name can end with a letter, number or underscore."
+    },
+    "privateIpAddress": {
+      "regex": "^(10(\\.(1?\\d\\d?|2([0-4]\\d?|5[0-5]))){2}|172\\.(1[6-9]|2\\d|3[0-2])(\\.(1?\\d\\d?|2([0-4]\\d?|5[0-5])))|192\\.168(\\.(1?\\d\\d?|2([0-4]\\d?|5[0-5]))))(\\.(1?\\d\\d?|2([0-4]\\d?|5[0-5])))$",
+      "validationMessage": "Should be a Private IP address."
+    }
+  },
+  "dataFactory": {
+    "name": {
+      "regex": "^[a-zA-Z0-9](?!.*--)[a-zA-Z0-9-]{1,61}[a-zA-Z0-9]$",
+      "validationMessage": "The name can contain both lower and upper case letters, numbers and hyphens '-', can't start or end with hyphens, and can't be longer than 63 characters"
+    }
+  },
+  "sqlServer": {
+    "name": {
+      "regex": "^[a-z0-9](?!.*--)[a-z0-9-]{1,61}[a-z0-9]$",
+      "validationMessage": "Your server name can contain only lowercase letters, numbers and hyphens '-', and it can't have more than 63 characters in length. Your server name can't start or end with hyphens '-'."
+    }
+  }
+}

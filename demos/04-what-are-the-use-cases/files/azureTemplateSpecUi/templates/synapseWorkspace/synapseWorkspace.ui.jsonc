@@ -1,0 +1,391 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2021-09-09/uiFormDefinition.schema.json",
+  "view": {
+    "kind": "Form",
+    "properties": {
+      "title": "Create Azure Synapse Analytics Workspace",
+      "steps": [
+        {
+          "name": "basics",
+          "label": "Basics",
+          "elements": [
+            {
+              "name": "preDeploymentTasks",
+              "type": "Microsoft.Common.Section",
+              "label": "Pre-Deployment tasks, that need to be done prior to this deployment",
+              "elements": [
+                {
+                  "name": "dataLakeInfo",
+                  "type": "Microsoft.Common.TextBlock",
+                  "visible": true,
+                  "options": {
+                    "text": "This solution requires Blob Container on previously deployed Azure Datalake (ADLS) according to KPMG DE standard. It is used to store Spark tables and application logs"
+                  }
+                },
+                {
+                  "name": "vaInfo",
+                  "type": "Microsoft.Common.TextBlock",
+                  "visible": true,
+                  "options": {
+                    "text": "This solution requires Blob Container on previously deployed Storage Account according to KPMG DE standard. It is used for Vulnerability Assessment report storage"
+                  }
+                },
+                {
+                  "name": "peDnsZoneInfo",
+                  "type": "Microsoft.Common.TextBlock",
+                  "visible": true,
+                  "options": {
+                    "text": "This solution requires the following azure private dns zones in the Core Services subscription: privatelink.sql.azuresynapse.net, privatelink.dev.azuresynapse.net"
+                  }
+                },
+                {
+                  "name": "deploymentIdentityInfo",
+                  "type": "Microsoft.Common.TextBlock",
+                  "visible": true,
+                  "options": {
+                    "text": "This solution requires existing keyVault key that should be RSA/RSA-HSM 2048 and 3072 byte-sized"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "resourceScope",
+              "type": "Microsoft.Common.ResourceScope",
+              "subscription": "{{allowedDeploymentSubscriptions}}",
+              "Location": {
+                "label": "Location",
+                "allowedValues": [
+                  "westeurope"
+                ]
+              }
+            },
+            {
+              "name": "changeId",
+              "type": "Microsoft.Common.TextBox",
+              "label": "Change ID",
+              "toolTip": "The ID of the Change this deployment is approved by. {{& $uiStrings.resourceTags.changeId.validationMessage}}",
+              "constraints": {
+                "required": true,
+                "regex": "{{& $uiStrings.resourceTags.changeId.regex}}",
+                "validationMessage": "{{& $uiStrings.resourceTags.changeId.validationMessage}}"
+              },
+              "visible": true
+            },
+            {
+              "name": "name",
+              "type": "Microsoft.Common.TextBox",
+              "label": "Synapse Analytics Workspace Name",
+              "toolTip": "The name of the Synapse Workspace to be deployed. {{& $uiStrings.synapseWorkspace.name.validationMessage}}",
+              "constraints": {
+                "required": true,
+                "regex": "{{& $uiStrings.synapseWorkspace.name.regex}}",
+                "validationMessage": "{{& $uiStrings.synapseWorkspace.name.validationMessage}}"
+              },
+              "visible": true
+            },
+            {
+              "name": "resourceGroupName",
+              "type": "Microsoft.Common.TextBox",
+              "label": "Resource Group Name",
+              "toolTip": "The name of the Resource Group where Synapse Workspace will be deployed, it will be deployed if not exist. {{& $uiStrings.resourceGroup.name.validationMessage}}",
+              "constraints": {
+                "required": true,
+                "regex": "{{& $uiStrings.resourceGroup.name.regex}}",
+                "validationMessage": "{{& $uiStrings.resourceGroup.name.validationMessage}}"
+              },
+              "visible": true
+            },
+            {
+              "name": "managedResourceGroupName",
+              "type": "Microsoft.Common.TextBox",
+              "label": "Synapse Analytics Managed Resource Group Name",
+              "toolTip": "The name of the Synapse Analytics' Managed Resource Group. {{& $uiStrings.synapseWorkspace.managedRgName.validationMessage}}",
+              "constraints": {
+                "required": true,
+                "regex": "{{& $uiStrings.synapseWorkspace.managedRgName.regex}}",
+                "validationMessage": "{{& $uiStrings.synapseWorkspace.managedRgName.validationMessage}}"
+              },
+              "visible": true
+            },
+            {
+              "name": "ADLS",
+              "type": "Microsoft.Common.Section",
+              "label": "ADLS Storage",
+              "elements": [
+                {
+                  "name": "datalakeList",
+                  "type": "Microsoft.Solutions.ArmApiControl",
+                  "request": {
+                    "method": "GET",
+                    "path": "[concat(steps('basics').resourceScope.subscription.id, '/providers/Microsoft.Storage/storageAccounts?api-version=2022-09-01')]",
+                    "transforms": {
+                      "datalakeDropdown": "value[? properties.isHnsEnabled == `true`].{label:name,value:{name:name,id:id}}"
+                    }
+                  }
+                },
+                {
+                  "name": "dataLakeSelector",
+                  "type": "Microsoft.Common.DropDown",
+                  "label": "Azure Data Lake Gen2 Storage Account",
+                  "toolTip": "Select the ADLS Gen2 account for the Workspace",
+                  "constraints": {
+                    "allowedValues": "[steps('basics').ADLS.datalakeList.transformed.datalakeDropdown]",
+                    "required": true
+                  },
+                  "visible": true
+                },
+                {
+                  "name": "datalakeContainerList",
+                  "type": "Microsoft.Solutions.ArmApiControl",
+                  "request": {
+                    "method": "GET",
+                    "path": "[concat(steps('basics').ADLS.dataLakeSelector.id,'/blobServices/default/containers?api-version=2022-09-01')]",
+                    "transforms": {
+                      "workspaceContainerDropdown": "value[].{label:name,value:name}"
+                    }
+                  }
+                },
+                {
+                  "name": "workspaceContainerSelector",
+                  "type": "Microsoft.Common.DropDown",
+                  "label": "Blob Storage Container for the Synapse Workspace",
+                  "toolTip": "Select the Storage Container for the Synapse Workspace data to be stored.",
+                  "constraints": {
+                    "allowedValues": "[steps('basics').ADLS.datalakeContainerList.transformed.workspaceContainerDropdown]",
+                    "required": true
+                  },
+                  "visible": true
+                }
+              ]
+            },
+            {
+              "name": "VA",
+              "type": "Microsoft.Common.Section",
+              "label": "VA Storage",
+              "elements": [
+                {
+                  "name": "StorageAccountVASelector",
+                  "type": "Microsoft.Solutions.ResourceSelector",
+                  "label": "Storage Account for Vulnerability Scans",
+                  "toolTip": "Select Storage Account for Vulnerability Scans by Microsoft Defender",
+                  "resourceType": "Microsoft.Storage/StorageAccounts",
+                  "constraints": {
+                    "required": true
+                  },
+                  "scope": {
+                    "subscriptionId": "[steps('basics').resourceScope.subscription.subscriptionId]",
+                    "location": "[steps('basics').resourceScope.location.name]"
+                  },
+                  "visible": true
+                },
+                {
+                  "name": "getBlobFromApi",
+                  "type": "Microsoft.Solutions.ArmApiControl",
+                  "request": {
+                    "method": "GET",
+                    "path": "[concat(steps('basics').VA.StorageAccountVASelector.id,'/blobServices/default/containers?api-version=2022-09-01')]",
+                    "transforms": {
+                      "blobContainersDropdown": "value[].{label:name,value:name}"
+                    }
+                  }
+                },
+                {
+                  "name": "BlobStorageContainerVASelector",
+                  "type": "Microsoft.Common.DropDown",
+                  "label": "Blob Storage Container for the VA Reports",
+                  "toolTip": "Select the Blob Storage Container for the VA Reports, to be stored.",
+                  "constraints": {
+                    "allowedValues": "[steps('basics').VA.getBlobFromApi.transformed.blobContainersDropdown]",
+                    "required": true
+                  },
+                  "visible": true
+                }
+              ]
+            },
+            {
+              "name": "auth",
+              "type": "Microsoft.Common.Section",
+              "label": "Authentication",
+              "elements": [
+                {
+                  "type": "Microsoft.Solutions.BladeInvokeControl",
+                  "name": "selectSynapseSqlAdminsBlade",
+                  "transforms": {
+                    "selection": "selectedObjects|[0].{displayName:displayName, id:id}"
+                  },
+                  "openBladeStatus": "[steps('basics').auth.synapseSqlAdministratorAadGroup.changing]",
+                  "bladeReference": {
+                    "name": "ObjectPickerBlade",
+                    "extension": "Microsoft_AAD_IAM",
+                    "parameters": {
+                      "title": "GraphObjectPicker",
+                      "bladeTitle": "Select AAD Group for Synapse Sql Administrators",
+                      "informationHeader": "Select AAD Group for Synapse Sql Administrators",
+                      "searchBoxTooltip": "Select AAD Group for Synapse Sql Administrators",
+                      "queries": 2,
+                      "selectedGridLabel": "Synapse Sql Administrators Group",
+                      "selectionMinimum": 1,
+                      "selectionMaximum": 1,
+                      "additionalQueriesOnSearch": 2
+                    },
+                    "inFullScreen": false
+                  }
+                },
+                {
+                  "type": "Microsoft.Common.Selector",
+                  "name": "synapseSqlAdministratorAadGroup",
+                  "label": "Synapse Sql Administrators group",
+                  "keyPath": "displayName",
+                  "descriptionKeyPath": "id",
+                  "value": "[steps('basics').auth.selectSynapseSqlAdminsBlade.transformed.selection]",
+                  "visible": true,
+                  "barColor": "[if(contains(steps('basics').auth.selectSynapseSqlAdminsBlade,'selectedObjects'),'#7fba00','#FF0000')]",
+                  "constraints": {
+                    "required": true
+                  },
+                  "link": "Select AAD Group"
+                }
+              ]
+            },
+            {
+              "name": "privateAccess",
+              "type": "Microsoft.Common.Section",
+              "label": "Private Access",
+              "elements": [
+                {
+                  "name": "vnetSelector",
+                  "type": "Microsoft.Solutions.ResourceSelector",
+                  "label": "Virtual Network",
+                  "toolTip": "Select Virtual Network for the Synapse Workspace's private endpoints",
+                  "resourceType": "Microsoft.Network/virtualNetworks",
+                  "constraints": {
+                    "required": true
+                  },
+                  "scope": {
+                    "subscriptionId": "[steps('basics').resourceScope.subscription.subscriptionId]",
+                    "location": "[steps('basics').resourceScope.location.name]"
+                  },
+                  "visible": true
+                },
+                {
+                  "name": "subnets",
+                  "type": "Microsoft.Solutions.ArmApiControl",
+                  "request": {
+                    "method": "GET",
+                    "path": "[concat(steps('basics').privateAccess.vnetSelector.id,'/subnets?api-version=2022-01-01')]",
+                    "transforms": {
+                      "subnetDropdown": "value[].{label:name,value:id}"
+                    }
+                  }
+                },
+                {
+                  "name": "subnetList",
+                  "type": "Microsoft.Common.DropDown",
+                  "label": "Subnet",
+                  "toolTip": "Select subnet for the Synapse Workspace's private endpoints",
+                  "filter": true,
+                  "constraints": {
+                    "allowedValues": "[steps('basics').privateAccess.subnets.transformed.subnetDropdown]",
+                    "required": true
+                  },
+                  "visible": true
+                }
+              ]
+            },
+            {
+              "name": "encryption",
+              "type": "Microsoft.Common.Section",
+              "label": "Workspace Encryption",
+              "elements": [
+                {
+                  "name": "keyVaultSelector",
+                  "type": "Microsoft.Solutions.ResourceSelector",
+                  "label": "Select Key Vault",
+                  "toolTip": "Select Key Vault where the encryption key is stored.",
+                  "resourceType": "Microsoft.KeyVault/vaults",
+                  "constraints": {
+                    "required": true
+                  },
+                  "scope": {
+                    "subscriptionId": "[steps('basics').resourceScope.subscription.subscriptionId]",
+                    "location": "[steps('basics').resourceScope.location.name]"
+                  },
+                  "visible": true
+                },
+                {
+                  "name": "KeyVaultKey",
+                  "type": "Microsoft.Common.TextBox",
+                  "label": "Key Name",
+                  "defaultValue": "",
+                  "toolTip": "The name of the keyVault Key for workspace encryption. {{& $uiStrings.keyVault.keyName.validationMessage}}",
+                  "constraints": {
+                    "required": true,
+                    "regex": "{{& $uiStrings.keyVault.keyName.regex}}",
+                    "validationMessage": "{{& $uiStrings.keyVault.keyName.validationMessage}}"
+                  },
+                  "visible": true
+                }
+              ]
+            },
+            {
+              "name": "postDeploymentTasks",
+              "type": "Microsoft.Common.Section",
+              "label": "Post-deployment tasks, that need to be done after successful deployment",
+              "elements": [
+                {
+                  "name": "rbac",
+                  "type": "Microsoft.Common.TextBlock",
+                  "visible": true,
+                  "options": {
+                    "text": "Synapse RBAC is not configured as part of the deployment and can be implemented separately if needed."
+                  }
+                },
+                {
+                  "name": "synapseRbac",
+                  "type": "Microsoft.Common.TextBlock",
+                  "visible": true,
+                  "options": {
+                    "text": "Assign CH Onboarding team 'synapse administrators' role in the Synapse studio"
+                  }
+                },
+                {
+                  "name": "storageContainerVAInfo",
+                  "type": "Microsoft.Common.TextBlock",
+                  "visible": true,
+                  "options": {
+                    "text": "Grant Synapse managed identity permissions to the storage account used to store VA reports.",
+                    "link": {
+                      "label": "Learn more",
+                      "uri": "https://learn.microsoft.com/en-us/azure/azure-sql/database/sql-database-vulnerability-assessment-storage?view=azuresql#prerequisites"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "outputs": {
+      "parameters": {
+        "synapseWorkspaceName": "[steps('basics').name]",
+        "changeId": "[steps('basics').changeId]",
+        "resourceGroupName": "[steps('basics').resourceGroupName]",
+        "synapseSqlAdministratorAadGroupObjectId": "[steps('basics').auth.synapseSqlAdministratorAadGroup.value.id]",
+        "managedResourceGroupName": "[steps('basics').managedResourceGroupName]",
+        "subnetResourceId": "[steps('basics').privateAccess.subnetList]",
+        "datalakeName": "[steps('basics').ADLS.dataLakeSelector.name]",
+        "datalakeContainerName": "[steps('basics').ADLS.workspaceContainerSelector]",
+        "vaStorgeaccountName": "[steps('basics').VA.StorageAccountVASelector.name]",
+        "vaStorgeaccountContainerName": "[steps('basics').VA.BlobStorageContainerVASelector]",
+        "virtualNetworkName": "[steps('basics').privateAccess.vnetSelector]",
+        "encryptionKeyVaultResourceId": "[steps('basics').encryption.keyVaultSelector.id]",
+        "encryptionKeyName": "[steps('basics').encryption.KeyVaultKey]",
+        "environmentType": "{{environmentType}}"
+      },
+      "kind": "Subscription",
+      "location": "[steps('basics').resourceScope.location.name]",
+      "subscriptionId": "[steps('basics').resourceScope.subscription.id]"
+    }
+  }
+}

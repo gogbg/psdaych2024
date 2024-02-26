@@ -1,0 +1,1466 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep (Bicep PowerShell 2.3.3)",
+      "version": "0.11.1.770",
+      "templateHash": "7964616765144118244"
+    }
+  },
+  "parameters": {
+    "changeId": {
+      "type": "string",
+      "metadata": {
+        "description": "Specify the number of the respective Change"
+      }
+    },
+    "synapseWorkspaceName": {
+      "type": "string",
+      "metadata": {
+        "description": "Specify the name for the user-assigned managed identity."
+      }
+    },
+    "subnetResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "Specify the subnet for the Synapse Workspace endpoint connectivity"
+      }
+    },
+    "resourceGroupName": {
+      "type": "string",
+      "metadata": {
+        "description": "Specify the name of the resourceGroup where the Synapse Workspace will be deployed"
+      }
+    },
+    "synapseSqlAdministratorAadGroupObjectId": {
+      "type": "string",
+      "metadata": {
+        "description": "Specify the objectId of the Azure AD group that will have sql administrative permissions on the Synapse Workspace"
+      }
+    },
+    "datalakeName": {
+      "type": "string",
+      "metadata": {
+        "description": "Specify the URL of the Azure Data Lake Storage Gen2 account for the Synapse Analytics"
+      }
+    },
+    "datalakeContainerName": {
+      "type": "string",
+      "metadata": {
+        "description": "Specify the storage container in the ADLS Gen2 account for the Synapse Workspace"
+      }
+    },
+    "vaStorgeaccountName": {
+      "type": "string",
+      "metadata": {
+        "description": "Specify the storage account for your vulnerability reports."
+      }
+    },
+    "vaStorgeaccountContainerName": {
+      "type": "string",
+      "metadata": {
+        "description": "Specify the blob container where your vulnerability reports will be stored."
+      }
+    },
+    "managedResourceGroupName": {
+      "type": "string",
+      "metadata": {
+        "description": "Specify the name for the Managed Resource Group for the Synapse Workspace"
+      }
+    },
+    "encryptionKeyVaultResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "Specify the customer managed key vault resource id that will be used for transparent data encryption"
+      }
+    },
+    "encryptionKeyName": {
+      "type": "string",
+      "metadata": {
+        "description": "Specify the customer managed key vault key name that will be used for transparent data encryption"
+      }
+    },
+    "environmentType": {
+      "type": "string",
+      "allowedValues": [
+        "sandbox",
+        "poc"
+      ],
+      "metadata": {
+        "description": "Specify the environment name"
+      }
+    }
+  },
+  "variables": {
+    "$fxv#0": {
+      "$schema": "../schemas/environmentConfig.schema.json",
+      "sandbox": {
+        "azure": {
+          "tenantId": "ee10be73-68e3-4da6-abe4-1aedaec2897f",
+          "subscriptionId": "b0cc3a28-eb4b-4990-9660-2b11f68170d0",
+          "location": "westeurope",
+          "coreServicesSubscriptionId": "b0cc3a28-eb4b-4990-9660-2b11f68170d0",
+          "coreServicesResourceGroupName": "de-rg-coreServices",
+          "dnsZonesResourceGroupName": "de-rg-dnsZones",
+          "coreServicesLawsName": "de-law-coreMonitoring",
+          "knetNextHopIp": "10.10.10.4",
+          "inetNextHopIp": "10.10.10.4"
+        },
+        "azureDevOps": {
+          "spnName": "nla-test-spn01"
+        },
+        "coreResourceNames": {
+          "deploymentsRgName": "de-rg-dplCore-01",
+          "deploymentsUamiName": "de-id-dpl-01",
+          "solutionCatalogRgName": "de-rg-solutionCatalog-01",
+          "coreHubVnetRgName": "de-rg-coreServices",
+          "coreHubVnetName": "devnetintvnet01",
+          "hubSubnet01Name": "CoreSubnets01",
+          "hubSubnet02Name": "CoreSubnets02",
+          "hubSubnet03Name": "CoreSubnets03",
+          "hubRt01": "DEPRD-INT-VM-Core0X-RT",
+          "hubRt02": "DEPRD-GatewaySubnet-RT",
+          "keyVaultInitialAccessGroupObjectId": "66c9015e-38da-476f-aa70-1740d3aeae9a"
+        },
+        "virtualMachines": {
+          "joinDomain": false,
+          "configureSCOM": false
+        }
+      },
+      "poc": {
+        "azure": {
+          "tenantId": "deff24bb-2089-4400-8c8e-f71e680378b2",
+          "subscriptionId": "2345d025-d11e-42fa-8ba9-44e3f376e936",
+          "location": "westeurope",
+          "coreServicesSubscriptionId": "0a62e3d7-0ff8-445b-a776-b26d721d95d2",
+          "coreServicesResourceGroupName": "DE-RG-CoreServices",
+          "dnsZonesResourceGroupName": "de-rg-dnsZones",
+          "coreServicesLawsName": "DE-LAW-CoreMonitoring",
+          "knetNextHopIp": "10.143.248.78",
+          "inetNextHopIp": "10.143.248.77"
+        },
+        "azureDevOps": {
+          "spnName": "DE-SPN-PRD-CH-NLA-DEV-POC"
+        },
+        "coreResourceNames": {
+          "deploymentsRgName": "DE-RG-DplCore-01",
+          "deploymentsUamiName": "DE-DEV-ID-Dpl-01",
+          "solutionCatalogRgName": "DE-RG-SolutionCatalog-01",
+          "coreHubVnetRgName": "DE-RG-DEPRDINTVNET001",
+          "coreHubVnetName": "DEPRDINTVNET001",
+          "hubSubnet01Name": "DEPRD-INT-VM-Core01",
+          "hubSubnet02Name": "DEPRD-INT-FW-Management",
+          "hubSubnet03Name": "DEPRD-INT-FW-InternetTransit",
+          "hubRt01": "DEPRD-INT-VM-Core0X-RT",
+          "hubRt02": "DEPRD-GatewaySubnet-RT",
+          "keyVaultInitialAccessGroupObjectId": "e7d1d2af-2a56-4c6c-a9ae-972e922d329f"
+        },
+        "virtualMachines": {
+          "joinDomain": true,
+          "configureSCOM": false
+        }
+      }
+    },
+    "environmentConfig": "[variables('$fxv#0')]",
+    "sqlPrivateEndpointName": "[format('PE_SQL_{0}', parameters('synapseWorkspaceName'))]",
+    "devPrivateEndpointName": "[format('PE_DEV_{0}', parameters('synapseWorkspaceName'))]",
+    "sqlOnDemandPrivateEndpointName": "[format('PE_SqlOnDemand_{0}', parameters('synapseWorkspaceName'))]",
+    "vaStorageAccountContainerPath": "[format('https://{0}.blob.core.windows.net/{1}', parameters('vaStorgeaccountName'), parameters('vaStorgeaccountContainerName'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "deploy-resource-group",
+      "location": "[deployment().location]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "name": {
+            "value": "[parameters('resourceGroupName')]"
+          },
+          "location": {
+            "value": "[variables('environmentConfig')[parameters('environmentType')].azure.location]"
+          },
+          "changeId": {
+            "value": "[parameters('changeId')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.11.1.770",
+              "templateHash": "9098661298326108952"
+            }
+          },
+          "parameters": {
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify name of Resource Group"
+              }
+            },
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify location of the Resource Group"
+              }
+            },
+            "changeId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the number of the respective Change"
+              }
+            },
+            "lifecycle": {
+              "type": "object",
+              "defaultValue": {
+                "runWindow": "bogus",
+                "autoStart": false,
+                "expiresOn": ""
+              },
+              "metadata": {
+                "description": "Specify the resource lifecycle settings. Provide object with properties [string]runWindow, [bool]autoStart,[string]expiresOn"
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Resources/resourceGroups",
+              "apiVersion": "2021-04-01",
+              "name": "[parameters('name')]",
+              "location": "[parameters('location')]",
+              "tags": {
+                "ChangeId": "[parameters('changeId')]",
+                "rlc": "[if(equals(parameters('lifecycle').runWindow, 'bogus'), '', string(parameters('lifecycle')))]"
+              }
+            }
+          ],
+          "outputs": {
+            "resId": {
+              "type": "string",
+              "value": "[subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('name'))]"
+            },
+            "res": {
+              "type": "object",
+              "value": "[reference(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('name')), '2021-04-01', 'full')]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "deploy-synapse-workspace",
+      "resourceGroup": "[parameters('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "changeId": {
+            "value": "[parameters('changeId')]"
+          },
+          "location": {
+            "value": "[variables('environmentConfig')[parameters('environmentType')].azure.location]"
+          },
+          "synapseWorkspaceName": {
+            "value": "[parameters('synapseWorkspaceName')]"
+          },
+          "datalakeName": {
+            "value": "[parameters('datalakeName')]"
+          },
+          "datalakeContainerName": {
+            "value": "[parameters('datalakeContainerName')]"
+          },
+          "managedResourceGroupName": {
+            "value": "[parameters('managedResourceGroupName')]"
+          },
+          "initialSqlAdminGroupId": {
+            "value": "[parameters('synapseSqlAdministratorAadGroupObjectId')]"
+          },
+          "lawsResourceId": {
+            "value": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('environmentConfig')[parameters('environmentType')].azure.coreServicesSubscriptionId, variables('environmentConfig')[parameters('environmentType')].azure.coreServicesResourceGroupName), 'Microsoft.OperationalInsights/workspaces', variables('environmentConfig')[parameters('environmentType')].azure.coreServicesLawsName)]"
+          },
+          "vaStorageAccountContainerPath": {
+            "value": "[variables('vaStorageAccountContainerPath')]"
+          },
+          "encryptionSettings": {
+            "value": {
+              "keyVaultResourceId": "[parameters('encryptionKeyVaultResourceId')]",
+              "keyName": "[parameters('encryptionKeyName')]"
+            }
+          },
+          "deploymentUamiResourceId": {
+            "value": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('environmentConfig')[parameters('environmentType')].azure.subscriptionId, variables('environmentConfig')[parameters('environmentType')].coreResourceNames.deploymentsRgName), 'Microsoft.ManagedIdentity/userAssignedIdentities', variables('environmentConfig')[parameters('environmentType')].coreResourceNames.deploymentsUamiName)]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.11.1.770",
+              "templateHash": "14542007764478721093"
+            }
+          },
+          "parameters": {
+            "changeId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the number of the respective Change"
+              }
+            },
+            "synapseWorkspaceName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the name for the user-assigned managed identity."
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "Specify the location of the user-assigned managed identity"
+              }
+            },
+            "datalakeName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the name of the Azure Data Lake Storage Gen2 account for the Synapse Analytics"
+              }
+            },
+            "datalakeContainerName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the storage container in the ADLS Gen2 account for the Synapse Workspace"
+              }
+            },
+            "vaStorageAccountContainerPath": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the blob container path where your vulnerability reports will be stored."
+              }
+            },
+            "managedResourceGroupName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the name for the Managed Resource Group for the Synapse Workspace"
+              }
+            },
+            "initialSqlAdminGroupId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the Object Id of the admin group for the Synapse Workspace"
+              }
+            },
+            "lawsResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the resource id of the log analytics workspace that will be used for diagnostic purposes"
+              }
+            },
+            "encryptionSettings": {
+              "type": "object",
+              "metadata": {
+                "description": "Specify the transparent data encryption with customer managed key settings. Expected properties are: enabled, keyVaultResourceId, keyName"
+              }
+            },
+            "activateWorkspace": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Activate the workspace after synapse managed identity is granted access to KeyVaylt in encryptionSettings"
+              }
+            },
+            "deploymentUamiResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the resourceid of the user-assigned managed identity used to run deployment script"
+              }
+            },
+            "rerun": {
+              "type": "string",
+              "defaultValue": "[newGuid()]",
+              "metadata": {
+                "description": "Specify if deployment scripts should not be re-executed"
+              }
+            }
+          },
+          "variables": {
+            "$fxv#0": "param\n(\n  [Parameter(Mandatory)]\n  [string]$ResourceId,\n\n  [Parameter()]\n  [int]$TimeoutInSecods = 60\n)\n$DeploymentScriptOutputs = @{}\n$sw = [System.Diagnostics.Stopwatch]::StartNew()\n$synapse = Get-AzSynapseWorkspace -ResourceId $ResourceId -ErrorAction Stop\nwhile ($synapse.Encryption.CustomerManagedKeyDetails.Status -ne 'Consistent') {\n  if ($sw.Elapsed.TotalSeconds -lt $TimeoutInSecods) {\n    Write-Information -MessageData \"Waiting for: '$ResourceId' activation. Time: $($sw.Elapsed.TotalSeconds)/$TimeoutInSecods\"\n    Start-Sleep -Seconds 10\n    $synapse = Get-AzSynapseWorkspace -ResourceId $ResourceId -ErrorAction Stop\n  } else {\n    throw \"Timeout of: $TimeoutInSecods seconds reached\"\n  }\n}\n"
+          },
+          "resources": [
+            {
+              "condition": "[not(parameters('activateWorkspace'))]",
+              "type": "Microsoft.Synapse/workspaces",
+              "apiVersion": "2021-06-01",
+              "name": "[parameters('synapseWorkspaceName')]",
+              "location": "[parameters('location')]",
+              "tags": {
+                "changeId": "[parameters('changeId')]"
+              },
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "properties": {
+                "managedResourceGroupName": "[parameters('managedResourceGroupName')]",
+                "managedVirtualNetwork": "default",
+                "managedVirtualNetworkSettings": {
+                  "linkedAccessCheckOnTargetResource": false,
+                  "preventDataExfiltration": true
+                },
+                "publicNetworkAccess": "Disabled",
+                "trustedServiceBypassEnabled": false,
+                "azureADOnlyAuthentication": true,
+                "encryption": {
+                  "cmk": {
+                    "kekIdentity": {
+                      "useSystemAssignedIdentity": true
+                    },
+                    "key": {
+                      "keyVaultUrl": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('encryptionSettings').keyVaultResourceId, '/')[2], split(parameters('encryptionSettings').keyVaultResourceId, '/')[4]), 'Microsoft.KeyVault/vaults/keys', split(parameters('encryptionSettings').keyVaultResourceId, '/')[8], parameters('encryptionSettings').keyName), '2022-07-01').keyUri]",
+                      "name": "default"
+                    }
+                  }
+                },
+                "defaultDataLakeStorage": {
+                  "accountUrl": "[format('https://{0}.dfs.core.windows.net', parameters('datalakeName'))]",
+                  "createManagedPrivateEndpoint": true,
+                  "filesystem": "[parameters('datalakeContainerName')]",
+                  "resourceId": "[resourceId('Microsoft.Storage/storageAccounts', parameters('datalakeName'))]"
+                }
+              }
+            },
+            {
+              "condition": "[not(parameters('activateWorkspace'))]",
+              "type": "Microsoft.Synapse/workspaces/administrators",
+              "apiVersion": "2021-06-01",
+              "name": "[format('{0}/{1}', parameters('synapseWorkspaceName'), 'activeDirectory')]",
+              "properties": {
+                "administratorType": "activeDirectory",
+                "sid": "[parameters('initialSqlAdminGroupId')]",
+                "tenantId": "[tenant().tenantId]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Synapse/workspaces', parameters('synapseWorkspaceName'))]"
+              ]
+            },
+            {
+              "condition": "[parameters('activateWorkspace')]",
+              "type": "Microsoft.Synapse/workspaces/keys",
+              "apiVersion": "2021-06-01",
+              "name": "[format('{0}/{1}', parameters('synapseWorkspaceName'), 'default')]",
+              "properties": {
+                "isActiveCMK": true,
+                "keyVaultUrl": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('encryptionSettings').keyVaultResourceId, '/')[2], split(parameters('encryptionSettings').keyVaultResourceId, '/')[4]), 'Microsoft.KeyVault/vaults/keys', split(parameters('encryptionSettings').keyVaultResourceId, '/')[8], parameters('encryptionSettings').keyName), '2022-07-01').keyUri]"
+              }
+            },
+            {
+              "condition": "[parameters('activateWorkspace')]",
+              "type": "Microsoft.Resources/deploymentScripts",
+              "apiVersion": "2020-10-01",
+              "name": "wait-workspace-activation",
+              "kind": "AzurePowerShell",
+              "location": "[parameters('location')]",
+              "properties": {
+                "forceUpdateTag": "[parameters('rerun')]",
+                "azPowerShellVersion": "8.2",
+                "cleanupPreference": "Always",
+                "retentionInterval": "PT1H",
+                "scriptContent": "[variables('$fxv#0')]",
+                "arguments": "[format('-ResourceId {0}', resourceId('Microsoft.Synapse/workspaces', parameters('synapseWorkspaceName')))]"
+              },
+              "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                  "[format('{0}', extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('deploymentUamiResourceId'), '/')[2], split(parameters('deploymentUamiResourceId'), '/')[4]), 'Microsoft.ManagedIdentity/userAssignedIdentities', split(parameters('deploymentUamiResourceId'), '/')[8]))]": {}
+                }
+              }
+            },
+            {
+              "condition": "[parameters('activateWorkspace')]",
+              "type": "Microsoft.Synapse/workspaces/auditingSettings",
+              "apiVersion": "2021-06-01",
+              "name": "[format('{0}/{1}', parameters('synapseWorkspaceName'), 'default')]",
+              "properties": {
+                "auditActionsAndGroups": [
+                  "BATCH_COMPLETED_GROUP",
+                  "SUCCESSFUL_DATABASE_AUTHENTICATION_GROUP",
+                  "FAILED_DATABASE_AUTHENTICATION_GROUP"
+                ],
+                "isAzureMonitorTargetEnabled": true,
+                "retentionDays": 90,
+                "state": "Enabled"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Resources/deploymentScripts', 'wait-workspace-activation')]"
+              ]
+            },
+            {
+              "condition": "[parameters('activateWorkspace')]",
+              "type": "Microsoft.Synapse/workspaces/securityAlertPolicies",
+              "apiVersion": "2021-06-01",
+              "name": "[format('{0}/{1}', parameters('synapseWorkspaceName'), 'synapseDefenderSettings')]",
+              "properties": {
+                "state": "Enabled"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Resources/deploymentScripts', 'wait-workspace-activation')]"
+              ]
+            },
+            {
+              "condition": "[parameters('activateWorkspace')]",
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[format('Microsoft.Synapse/workspaces/{0}', parameters('synapseWorkspaceName'))]",
+              "name": "[format('{0}-dsg', parameters('synapseWorkspaceName'))]",
+              "properties": {
+                "workspaceId": "[parameters('lawsResourceId')]",
+                "logs": [
+                  {
+                    "category": "SynapseRbacOperations",
+                    "enabled": true
+                  },
+                  {
+                    "category": "BuiltinSqlReqsEnded",
+                    "enabled": true
+                  },
+                  {
+                    "category": "GatewayApiRequests",
+                    "enabled": true
+                  },
+                  {
+                    "category": "IntegrationActivityRuns",
+                    "enabled": true
+                  },
+                  {
+                    "category": "IntegrationPipelineRuns",
+                    "enabled": true
+                  },
+                  {
+                    "category": "IntegrationTriggerRuns",
+                    "enabled": true
+                  },
+                  {
+                    "category": "SQLSecurityAuditEvents",
+                    "enabled": true
+                  },
+                  {
+                    "category": "SynapseLinkEvent",
+                    "enabled": true
+                  }
+                ],
+                "metrics": [
+                  {
+                    "enabled": true,
+                    "timeGrain": "PT1M"
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Resources/deploymentScripts', 'wait-workspace-activation')]"
+              ]
+            },
+            {
+              "condition": "[parameters('activateWorkspace')]",
+              "type": "Microsoft.Synapse/workspaces/vulnerabilityAssessments",
+              "apiVersion": "2021-06-01",
+              "name": "[format('{0}/{1}', parameters('synapseWorkspaceName'), 'synapseVaScan')]",
+              "properties": {
+                "recurringScans": {
+                  "isEnabled": true
+                },
+                "storageContainerPath": "[parameters('vaStorageAccountContainerPath')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Synapse/workspaces/securityAlertPolicies', parameters('synapseWorkspaceName'), 'synapseDefenderSettings')]",
+                "[resourceId('Microsoft.Resources/deploymentScripts', 'wait-workspace-activation')]"
+              ]
+            }
+          ],
+          "outputs": {
+            "resId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Synapse/workspaces', parameters('synapseWorkspaceName'))]"
+            },
+            "res": {
+              "type": "object",
+              "value": "[reference(resourceId('Microsoft.Synapse/workspaces', parameters('synapseWorkspaceName')), '2021-06-01', 'full')]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/deployments', 'deploy-resource-group')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "update-keyVaultAccessPolicy",
+      "subscriptionId": "[split(parameters('encryptionKeyVaultResourceId'), '/')[2]]",
+      "resourceGroup": "[split(parameters('encryptionKeyVaultResourceId'), '/')[4]]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "keyVaultName": {
+            "value": "[split(parameters('encryptionKeyVaultResourceId'), '/')[8]]"
+          },
+          "changeType": {
+            "value": "add"
+          },
+          "accessPolicies": {
+            "value": [
+              {
+                "tenantId": "[tenant().tenantId]",
+                "objectId": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'deploy-synapse-workspace')).outputs.res.value.identity.principalId]",
+                "permissions": {
+                  "keys": [
+                    "Get",
+                    "WrapKey",
+                    "UnwrapKey"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.11.1.770",
+              "templateHash": "14663550845447787561"
+            }
+          },
+          "parameters": {
+            "keyVaultName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify KeyVault name"
+              }
+            },
+            "accessPolicies": {
+              "type": "array",
+              "metadata": {
+                "description": "Specify access policies"
+              }
+            },
+            "changeType": {
+              "type": "string",
+              "allowedValues": [
+                "add",
+                "remove",
+                "replace"
+              ],
+              "metadata": {
+                "description": "Specify the type of access policy change to make, add, remove, or replace"
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.KeyVault/vaults/accessPolicies",
+              "apiVersion": "2022-07-01",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), parameters('changeType'))]",
+              "properties": {
+                "accessPolicies": "[parameters('accessPolicies')]"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'deploy-synapse-workspace')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "update-synapse-workspace",
+      "resourceGroup": "[parameters('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "changeId": {
+            "value": "[parameters('changeId')]"
+          },
+          "location": {
+            "value": "[variables('environmentConfig')[parameters('environmentType')].azure.location]"
+          },
+          "synapseWorkspaceName": {
+            "value": "[parameters('synapseWorkspaceName')]"
+          },
+          "datalakeName": {
+            "value": "[parameters('datalakeName')]"
+          },
+          "datalakeContainerName": {
+            "value": "[parameters('datalakeContainerName')]"
+          },
+          "managedResourceGroupName": {
+            "value": "[parameters('managedResourceGroupName')]"
+          },
+          "initialSqlAdminGroupId": {
+            "value": "[parameters('synapseSqlAdministratorAadGroupObjectId')]"
+          },
+          "lawsResourceId": {
+            "value": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('environmentConfig')[parameters('environmentType')].azure.coreServicesSubscriptionId, variables('environmentConfig')[parameters('environmentType')].azure.coreServicesResourceGroupName), 'Microsoft.OperationalInsights/workspaces', variables('environmentConfig')[parameters('environmentType')].azure.coreServicesLawsName)]"
+          },
+          "vaStorageAccountContainerPath": {
+            "value": "[variables('vaStorageAccountContainerPath')]"
+          },
+          "encryptionSettings": {
+            "value": {
+              "keyVaultResourceId": "[parameters('encryptionKeyVaultResourceId')]",
+              "keyName": "[parameters('encryptionKeyName')]"
+            }
+          },
+          "activateWorkspace": {
+            "value": true
+          },
+          "deploymentUamiResourceId": {
+            "value": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('environmentConfig')[parameters('environmentType')].azure.subscriptionId, variables('environmentConfig')[parameters('environmentType')].coreResourceNames.deploymentsRgName), 'Microsoft.ManagedIdentity/userAssignedIdentities', variables('environmentConfig')[parameters('environmentType')].coreResourceNames.deploymentsUamiName)]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.11.1.770",
+              "templateHash": "14542007764478721093"
+            }
+          },
+          "parameters": {
+            "changeId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the number of the respective Change"
+              }
+            },
+            "synapseWorkspaceName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the name for the user-assigned managed identity."
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "Specify the location of the user-assigned managed identity"
+              }
+            },
+            "datalakeName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the name of the Azure Data Lake Storage Gen2 account for the Synapse Analytics"
+              }
+            },
+            "datalakeContainerName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the storage container in the ADLS Gen2 account for the Synapse Workspace"
+              }
+            },
+            "vaStorageAccountContainerPath": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the blob container path where your vulnerability reports will be stored."
+              }
+            },
+            "managedResourceGroupName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the name for the Managed Resource Group for the Synapse Workspace"
+              }
+            },
+            "initialSqlAdminGroupId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the Object Id of the admin group for the Synapse Workspace"
+              }
+            },
+            "lawsResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the resource id of the log analytics workspace that will be used for diagnostic purposes"
+              }
+            },
+            "encryptionSettings": {
+              "type": "object",
+              "metadata": {
+                "description": "Specify the transparent data encryption with customer managed key settings. Expected properties are: enabled, keyVaultResourceId, keyName"
+              }
+            },
+            "activateWorkspace": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Activate the workspace after synapse managed identity is granted access to KeyVaylt in encryptionSettings"
+              }
+            },
+            "deploymentUamiResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the resourceid of the user-assigned managed identity used to run deployment script"
+              }
+            },
+            "rerun": {
+              "type": "string",
+              "defaultValue": "[newGuid()]",
+              "metadata": {
+                "description": "Specify if deployment scripts should not be re-executed"
+              }
+            }
+          },
+          "variables": {
+            "$fxv#0": "param\n(\n  [Parameter(Mandatory)]\n  [string]$ResourceId,\n\n  [Parameter()]\n  [int]$TimeoutInSecods = 60\n)\n$DeploymentScriptOutputs = @{}\n$sw = [System.Diagnostics.Stopwatch]::StartNew()\n$synapse = Get-AzSynapseWorkspace -ResourceId $ResourceId -ErrorAction Stop\nwhile ($synapse.Encryption.CustomerManagedKeyDetails.Status -ne 'Consistent') {\n  if ($sw.Elapsed.TotalSeconds -lt $TimeoutInSecods) {\n    Write-Information -MessageData \"Waiting for: '$ResourceId' activation. Time: $($sw.Elapsed.TotalSeconds)/$TimeoutInSecods\"\n    Start-Sleep -Seconds 10\n    $synapse = Get-AzSynapseWorkspace -ResourceId $ResourceId -ErrorAction Stop\n  } else {\n    throw \"Timeout of: $TimeoutInSecods seconds reached\"\n  }\n}\n"
+          },
+          "resources": [
+            {
+              "condition": "[not(parameters('activateWorkspace'))]",
+              "type": "Microsoft.Synapse/workspaces",
+              "apiVersion": "2021-06-01",
+              "name": "[parameters('synapseWorkspaceName')]",
+              "location": "[parameters('location')]",
+              "tags": {
+                "changeId": "[parameters('changeId')]"
+              },
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "properties": {
+                "managedResourceGroupName": "[parameters('managedResourceGroupName')]",
+                "managedVirtualNetwork": "default",
+                "managedVirtualNetworkSettings": {
+                  "linkedAccessCheckOnTargetResource": false,
+                  "preventDataExfiltration": true
+                },
+                "publicNetworkAccess": "Disabled",
+                "trustedServiceBypassEnabled": false,
+                "azureADOnlyAuthentication": true,
+                "encryption": {
+                  "cmk": {
+                    "kekIdentity": {
+                      "useSystemAssignedIdentity": true
+                    },
+                    "key": {
+                      "keyVaultUrl": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('encryptionSettings').keyVaultResourceId, '/')[2], split(parameters('encryptionSettings').keyVaultResourceId, '/')[4]), 'Microsoft.KeyVault/vaults/keys', split(parameters('encryptionSettings').keyVaultResourceId, '/')[8], parameters('encryptionSettings').keyName), '2022-07-01').keyUri]",
+                      "name": "default"
+                    }
+                  }
+                },
+                "defaultDataLakeStorage": {
+                  "accountUrl": "[format('https://{0}.dfs.core.windows.net', parameters('datalakeName'))]",
+                  "createManagedPrivateEndpoint": true,
+                  "filesystem": "[parameters('datalakeContainerName')]",
+                  "resourceId": "[resourceId('Microsoft.Storage/storageAccounts', parameters('datalakeName'))]"
+                }
+              }
+            },
+            {
+              "condition": "[not(parameters('activateWorkspace'))]",
+              "type": "Microsoft.Synapse/workspaces/administrators",
+              "apiVersion": "2021-06-01",
+              "name": "[format('{0}/{1}', parameters('synapseWorkspaceName'), 'activeDirectory')]",
+              "properties": {
+                "administratorType": "activeDirectory",
+                "sid": "[parameters('initialSqlAdminGroupId')]",
+                "tenantId": "[tenant().tenantId]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Synapse/workspaces', parameters('synapseWorkspaceName'))]"
+              ]
+            },
+            {
+              "condition": "[parameters('activateWorkspace')]",
+              "type": "Microsoft.Synapse/workspaces/keys",
+              "apiVersion": "2021-06-01",
+              "name": "[format('{0}/{1}', parameters('synapseWorkspaceName'), 'default')]",
+              "properties": {
+                "isActiveCMK": true,
+                "keyVaultUrl": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('encryptionSettings').keyVaultResourceId, '/')[2], split(parameters('encryptionSettings').keyVaultResourceId, '/')[4]), 'Microsoft.KeyVault/vaults/keys', split(parameters('encryptionSettings').keyVaultResourceId, '/')[8], parameters('encryptionSettings').keyName), '2022-07-01').keyUri]"
+              }
+            },
+            {
+              "condition": "[parameters('activateWorkspace')]",
+              "type": "Microsoft.Resources/deploymentScripts",
+              "apiVersion": "2020-10-01",
+              "name": "wait-workspace-activation",
+              "kind": "AzurePowerShell",
+              "location": "[parameters('location')]",
+              "properties": {
+                "forceUpdateTag": "[parameters('rerun')]",
+                "azPowerShellVersion": "8.2",
+                "cleanupPreference": "Always",
+                "retentionInterval": "PT1H",
+                "scriptContent": "[variables('$fxv#0')]",
+                "arguments": "[format('-ResourceId {0}', resourceId('Microsoft.Synapse/workspaces', parameters('synapseWorkspaceName')))]"
+              },
+              "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                  "[format('{0}', extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('deploymentUamiResourceId'), '/')[2], split(parameters('deploymentUamiResourceId'), '/')[4]), 'Microsoft.ManagedIdentity/userAssignedIdentities', split(parameters('deploymentUamiResourceId'), '/')[8]))]": {}
+                }
+              }
+            },
+            {
+              "condition": "[parameters('activateWorkspace')]",
+              "type": "Microsoft.Synapse/workspaces/auditingSettings",
+              "apiVersion": "2021-06-01",
+              "name": "[format('{0}/{1}', parameters('synapseWorkspaceName'), 'default')]",
+              "properties": {
+                "auditActionsAndGroups": [
+                  "BATCH_COMPLETED_GROUP",
+                  "SUCCESSFUL_DATABASE_AUTHENTICATION_GROUP",
+                  "FAILED_DATABASE_AUTHENTICATION_GROUP"
+                ],
+                "isAzureMonitorTargetEnabled": true,
+                "retentionDays": 90,
+                "state": "Enabled"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Resources/deploymentScripts', 'wait-workspace-activation')]"
+              ]
+            },
+            {
+              "condition": "[parameters('activateWorkspace')]",
+              "type": "Microsoft.Synapse/workspaces/securityAlertPolicies",
+              "apiVersion": "2021-06-01",
+              "name": "[format('{0}/{1}', parameters('synapseWorkspaceName'), 'synapseDefenderSettings')]",
+              "properties": {
+                "state": "Enabled"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Resources/deploymentScripts', 'wait-workspace-activation')]"
+              ]
+            },
+            {
+              "condition": "[parameters('activateWorkspace')]",
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[format('Microsoft.Synapse/workspaces/{0}', parameters('synapseWorkspaceName'))]",
+              "name": "[format('{0}-dsg', parameters('synapseWorkspaceName'))]",
+              "properties": {
+                "workspaceId": "[parameters('lawsResourceId')]",
+                "logs": [
+                  {
+                    "category": "SynapseRbacOperations",
+                    "enabled": true
+                  },
+                  {
+                    "category": "BuiltinSqlReqsEnded",
+                    "enabled": true
+                  },
+                  {
+                    "category": "GatewayApiRequests",
+                    "enabled": true
+                  },
+                  {
+                    "category": "IntegrationActivityRuns",
+                    "enabled": true
+                  },
+                  {
+                    "category": "IntegrationPipelineRuns",
+                    "enabled": true
+                  },
+                  {
+                    "category": "IntegrationTriggerRuns",
+                    "enabled": true
+                  },
+                  {
+                    "category": "SQLSecurityAuditEvents",
+                    "enabled": true
+                  },
+                  {
+                    "category": "SynapseLinkEvent",
+                    "enabled": true
+                  }
+                ],
+                "metrics": [
+                  {
+                    "enabled": true,
+                    "timeGrain": "PT1M"
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Resources/deploymentScripts', 'wait-workspace-activation')]"
+              ]
+            },
+            {
+              "condition": "[parameters('activateWorkspace')]",
+              "type": "Microsoft.Synapse/workspaces/vulnerabilityAssessments",
+              "apiVersion": "2021-06-01",
+              "name": "[format('{0}/{1}', parameters('synapseWorkspaceName'), 'synapseVaScan')]",
+              "properties": {
+                "recurringScans": {
+                  "isEnabled": true
+                },
+                "storageContainerPath": "[parameters('vaStorageAccountContainerPath')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Synapse/workspaces/securityAlertPolicies', parameters('synapseWorkspaceName'), 'synapseDefenderSettings')]",
+                "[resourceId('Microsoft.Resources/deploymentScripts', 'wait-workspace-activation')]"
+              ]
+            }
+          ],
+          "outputs": {
+            "resId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Synapse/workspaces', parameters('synapseWorkspaceName'))]"
+            },
+            "res": {
+              "type": "object",
+              "value": "[reference(resourceId('Microsoft.Synapse/workspaces', parameters('synapseWorkspaceName')), '2021-06-01', 'full')]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('encryptionKeyVaultResourceId'), '/')[2], split(parameters('encryptionKeyVaultResourceId'), '/')[4]), 'Microsoft.Resources/deployments', 'update-keyVaultAccessPolicy')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "deploy-sql-PE",
+      "resourceGroup": "[parameters('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "name": {
+            "value": "[variables('sqlPrivateEndpointName')]"
+          },
+          "location": {
+            "value": "[variables('environmentConfig')[parameters('environmentType')].azure.location]"
+          },
+          "privateLinkResourceId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'deploy-synapse-workspace')).outputs.resId.value]"
+          },
+          "privateLinkGroupId": {
+            "value": [
+              "Sql"
+            ]
+          },
+          "privateDnsZoneResourceId": {
+            "value": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('environmentConfig')[parameters('environmentType')].azure.coreServicesSubscriptionId, variables('environmentConfig')[parameters('environmentType')].azure.dnsZonesResourceGroupName), 'Microsoft.Network/privateDnsZones', 'privatelink.sql.azuresynapse.net')]"
+          },
+          "subnetResourceId": {
+            "value": "[parameters('subnetResourceId')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.11.1.770",
+              "templateHash": "5579937947801035933"
+            }
+          },
+          "parameters": {
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify name of Container Registry"
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "Specify location of the Container Registry"
+              }
+            },
+            "subnetResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the resourceId of the subnet where private endpoint will be created"
+              }
+            },
+            "privateLinkResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the resourceId of the resource this private endpoints connects to"
+              }
+            },
+            "privateLinkGroupId": {
+              "type": "array",
+              "metadata": {
+                "description": "Specify the groupIds of the resource this private endpoints connects to"
+              }
+            },
+            "privateDnsZoneResourceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Specify the resourceId of private dns zone if you want to automatically create A record there"
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/privateEndpoints",
+              "apiVersion": "2022-01-01",
+              "name": "[parameters('name')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "subnet": {
+                  "id": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('subnetResourceId'), '/')[2], split(parameters('subnetResourceId'), '/')[4]), 'Microsoft.Network/virtualNetworks/subnets', split(parameters('subnetResourceId'), '/')[8], split(parameters('subnetResourceId'), '/')[10])]"
+                },
+                "privateLinkServiceConnections": [
+                  {
+                    "name": "[parameters('name')]",
+                    "properties": {
+                      "groupIds": "[parameters('privateLinkGroupId')]",
+                      "privateLinkServiceId": "[parameters('privateLinkResourceId')]"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "condition": "[not(empty(parameters('privateDnsZoneResourceId')))]",
+              "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+              "apiVersion": "2022-01-01",
+              "name": "[format('{0}/{1}', parameters('name'), 'default')]",
+              "properties": {
+                "privateDnsZoneConfigs": [
+                  {
+                    "name": "[format('{0}-{1}', parameters('name'), split(parameters('privateDnsZoneResourceId'), '/')[8])]",
+                    "properties": {
+                      "privateDnsZoneId": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('privateDnsZoneResourceId'), '/')[2], split(parameters('privateDnsZoneResourceId'), '/')[4]), 'Microsoft.Network/privateDnsZones', split(parameters('privateDnsZoneResourceId'), '/')[8])]"
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateEndpoints', parameters('name'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "resId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Network/privateEndpoints', parameters('name'))]"
+            },
+            "res": {
+              "type": "object",
+              "value": "[reference(resourceId('Microsoft.Network/privateEndpoints', parameters('name')), '2022-01-01', 'full')]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'deploy-synapse-workspace')]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'update-synapse-workspace')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "deploy-sqlServerless-PE",
+      "resourceGroup": "[parameters('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "name": {
+            "value": "[variables('sqlOnDemandPrivateEndpointName')]"
+          },
+          "location": {
+            "value": "[variables('environmentConfig')[parameters('environmentType')].azure.location]"
+          },
+          "privateLinkResourceId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'deploy-synapse-workspace')).outputs.resId.value]"
+          },
+          "privateLinkGroupId": {
+            "value": [
+              "sqlOnDemand"
+            ]
+          },
+          "privateDnsZoneResourceId": {
+            "value": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('environmentConfig')[parameters('environmentType')].azure.coreServicesSubscriptionId, variables('environmentConfig')[parameters('environmentType')].azure.dnsZonesResourceGroupName), 'Microsoft.Network/privateDnsZones', 'privatelink.sql.azuresynapse.net')]"
+          },
+          "subnetResourceId": {
+            "value": "[parameters('subnetResourceId')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.11.1.770",
+              "templateHash": "5579937947801035933"
+            }
+          },
+          "parameters": {
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify name of Container Registry"
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "Specify location of the Container Registry"
+              }
+            },
+            "subnetResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the resourceId of the subnet where private endpoint will be created"
+              }
+            },
+            "privateLinkResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the resourceId of the resource this private endpoints connects to"
+              }
+            },
+            "privateLinkGroupId": {
+              "type": "array",
+              "metadata": {
+                "description": "Specify the groupIds of the resource this private endpoints connects to"
+              }
+            },
+            "privateDnsZoneResourceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Specify the resourceId of private dns zone if you want to automatically create A record there"
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/privateEndpoints",
+              "apiVersion": "2022-01-01",
+              "name": "[parameters('name')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "subnet": {
+                  "id": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('subnetResourceId'), '/')[2], split(parameters('subnetResourceId'), '/')[4]), 'Microsoft.Network/virtualNetworks/subnets', split(parameters('subnetResourceId'), '/')[8], split(parameters('subnetResourceId'), '/')[10])]"
+                },
+                "privateLinkServiceConnections": [
+                  {
+                    "name": "[parameters('name')]",
+                    "properties": {
+                      "groupIds": "[parameters('privateLinkGroupId')]",
+                      "privateLinkServiceId": "[parameters('privateLinkResourceId')]"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "condition": "[not(empty(parameters('privateDnsZoneResourceId')))]",
+              "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+              "apiVersion": "2022-01-01",
+              "name": "[format('{0}/{1}', parameters('name'), 'default')]",
+              "properties": {
+                "privateDnsZoneConfigs": [
+                  {
+                    "name": "[format('{0}-{1}', parameters('name'), split(parameters('privateDnsZoneResourceId'), '/')[8])]",
+                    "properties": {
+                      "privateDnsZoneId": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('privateDnsZoneResourceId'), '/')[2], split(parameters('privateDnsZoneResourceId'), '/')[4]), 'Microsoft.Network/privateDnsZones', split(parameters('privateDnsZoneResourceId'), '/')[8])]"
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateEndpoints', parameters('name'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "resId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Network/privateEndpoints', parameters('name'))]"
+            },
+            "res": {
+              "type": "object",
+              "value": "[reference(resourceId('Microsoft.Network/privateEndpoints', parameters('name')), '2022-01-01', 'full')]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'deploy-synapse-workspace')]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'update-synapse-workspace')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "deploy-sql-dev-PE",
+      "resourceGroup": "[parameters('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "name": {
+            "value": "[variables('devPrivateEndpointName')]"
+          },
+          "location": {
+            "value": "[variables('environmentConfig')[parameters('environmentType')].azure.location]"
+          },
+          "privateLinkResourceId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'deploy-synapse-workspace')).outputs.resId.value]"
+          },
+          "privateLinkGroupId": {
+            "value": [
+              "dev"
+            ]
+          },
+          "privateDnsZoneResourceId": {
+            "value": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('environmentConfig')[parameters('environmentType')].azure.coreServicesSubscriptionId, variables('environmentConfig')[parameters('environmentType')].azure.dnsZonesResourceGroupName), 'Microsoft.Network/privateDnsZones', 'privatelink.dev.azuresynapse.net')]"
+          },
+          "subnetResourceId": {
+            "value": "[parameters('subnetResourceId')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.11.1.770",
+              "templateHash": "5579937947801035933"
+            }
+          },
+          "parameters": {
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify name of Container Registry"
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "Specify location of the Container Registry"
+              }
+            },
+            "subnetResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the resourceId of the subnet where private endpoint will be created"
+              }
+            },
+            "privateLinkResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the resourceId of the resource this private endpoints connects to"
+              }
+            },
+            "privateLinkGroupId": {
+              "type": "array",
+              "metadata": {
+                "description": "Specify the groupIds of the resource this private endpoints connects to"
+              }
+            },
+            "privateDnsZoneResourceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Specify the resourceId of private dns zone if you want to automatically create A record there"
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/privateEndpoints",
+              "apiVersion": "2022-01-01",
+              "name": "[parameters('name')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "subnet": {
+                  "id": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('subnetResourceId'), '/')[2], split(parameters('subnetResourceId'), '/')[4]), 'Microsoft.Network/virtualNetworks/subnets', split(parameters('subnetResourceId'), '/')[8], split(parameters('subnetResourceId'), '/')[10])]"
+                },
+                "privateLinkServiceConnections": [
+                  {
+                    "name": "[parameters('name')]",
+                    "properties": {
+                      "groupIds": "[parameters('privateLinkGroupId')]",
+                      "privateLinkServiceId": "[parameters('privateLinkResourceId')]"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "condition": "[not(empty(parameters('privateDnsZoneResourceId')))]",
+              "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+              "apiVersion": "2022-01-01",
+              "name": "[format('{0}/{1}', parameters('name'), 'default')]",
+              "properties": {
+                "privateDnsZoneConfigs": [
+                  {
+                    "name": "[format('{0}-{1}', parameters('name'), split(parameters('privateDnsZoneResourceId'), '/')[8])]",
+                    "properties": {
+                      "privateDnsZoneId": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('privateDnsZoneResourceId'), '/')[2], split(parameters('privateDnsZoneResourceId'), '/')[4]), 'Microsoft.Network/privateDnsZones', split(parameters('privateDnsZoneResourceId'), '/')[8])]"
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateEndpoints', parameters('name'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "resId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Network/privateEndpoints', parameters('name'))]"
+            },
+            "res": {
+              "type": "object",
+              "value": "[reference(resourceId('Microsoft.Network/privateEndpoints', parameters('name')), '2022-01-01', 'full')]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'deploy-synapse-workspace')]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'update-synapse-workspace')]"
+      ]
+    }
+  ]
+}

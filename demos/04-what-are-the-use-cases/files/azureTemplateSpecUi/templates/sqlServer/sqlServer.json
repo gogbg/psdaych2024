@@ -1,0 +1,984 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep (Bicep PowerShell 2.3.3)",
+      "version": "0.11.1.770",
+      "templateHash": "6970514942112699388"
+    }
+  },
+  "parameters": {
+    "changeId": {
+      "type": "string",
+      "metadata": {
+        "description": "Specify the number of the respective Change"
+      }
+    },
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "Specify the name of the Sql server"
+      }
+    },
+    "resourceGroupName": {
+      "type": "string",
+      "metadata": {
+        "description": "Specify the name of the resourceGroup where sql server will be deployed"
+      }
+    },
+    "sqlAadAdministratorGroupName": {
+      "type": "string",
+      "metadata": {
+        "description": "Specify the name of the Azure AD group that will have administrative permissions on the sql server"
+      }
+    },
+    "sqlAadAdministratorGroupObjectId": {
+      "type": "string",
+      "metadata": {
+        "description": "Specify the objectId of the Azure AD group that will have administrative permissions on the sql server"
+      }
+    },
+    "subnetResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "Specify the subnet for sql server private connectivity"
+      }
+    },
+    "tdeKeyVaultResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "Specify the customer managed key vault resource id that will be used for transperant data encryption"
+      }
+    },
+    "tdeKeyVaultKeyName": {
+      "type": "string",
+      "metadata": {
+        "description": "Specify the customer managed key vault key name that will be used for transperant data encryption"
+      }
+    },
+    "environmentType": {
+      "type": "string",
+      "allowedValues": [
+        "sandbox",
+        "poc"
+      ],
+      "metadata": {
+        "description": "Specify the environment name"
+      }
+    },
+    "vaStorageAccountName": {
+      "type": "string",
+      "metadata": {
+        "description": "Specify the storage account for your vulnerability reports."
+      }
+    },
+    "vaStorageAccountContainerName": {
+      "type": "string",
+      "metadata": {
+        "description": "Specify the blob container where your vulnerability reports will be stored."
+      }
+    }
+  },
+  "variables": {
+    "$fxv#0": {
+      "$schema": "../schemas/environmentConfig.schema.json",
+      "sandbox": {
+        "azure": {
+          "tenantId": "ee10be73-68e3-4da6-abe4-1aedaec2897f",
+          "subscriptionId": "b0cc3a28-eb4b-4990-9660-2b11f68170d0",
+          "location": "westeurope",
+          "coreServicesSubscriptionId": "b0cc3a28-eb4b-4990-9660-2b11f68170d0",
+          "coreServicesResourceGroupName": "de-rg-coreServices",
+          "dnsZonesResourceGroupName": "de-rg-dnsZones",
+          "coreServicesLawsName": "de-law-coreMonitoring",
+          "knetNextHopIp": "10.10.10.4",
+          "inetNextHopIp": "10.10.10.4"
+        },
+        "azureDevOps": {
+          "spnName": "nla-test-spn01"
+        },
+        "coreResourceNames": {
+          "deploymentsRgName": "de-rg-dplCore-01",
+          "deploymentsUamiName": "de-id-dpl-01",
+          "solutionCatalogRgName": "de-rg-solutionCatalog-01",
+          "coreHubVnetRgName": "de-rg-coreServices",
+          "coreHubVnetName": "devnetintvnet01",
+          "hubSubnet01Name": "CoreSubnets01",
+          "hubSubnet02Name": "CoreSubnets02",
+          "hubSubnet03Name": "CoreSubnets03",
+          "hubRt01": "DEPRD-INT-VM-Core0X-RT",
+          "hubRt02": "DEPRD-GatewaySubnet-RT",
+          "keyVaultInitialAccessGroupObjectId": "66c9015e-38da-476f-aa70-1740d3aeae9a"
+        },
+        "virtualMachines": {
+          "joinDomain": false,
+          "configureSCOM": false
+        }
+      },
+      "poc": {
+        "azure": {
+          "tenantId": "deff24bb-2089-4400-8c8e-f71e680378b2",
+          "subscriptionId": "2345d025-d11e-42fa-8ba9-44e3f376e936",
+          "location": "westeurope",
+          "coreServicesSubscriptionId": "0a62e3d7-0ff8-445b-a776-b26d721d95d2",
+          "coreServicesResourceGroupName": "DE-RG-CoreServices",
+          "dnsZonesResourceGroupName": "de-rg-dnsZones",
+          "coreServicesLawsName": "DE-LAW-CoreMonitoring",
+          "knetNextHopIp": "10.143.248.78",
+          "inetNextHopIp": "10.143.248.77"
+        },
+        "azureDevOps": {
+          "spnName": "DE-SPN-PRD-CH-NLA-DEV-POC"
+        },
+        "coreResourceNames": {
+          "deploymentsRgName": "DE-RG-DplCore-01",
+          "deploymentsUamiName": "DE-DEV-ID-Dpl-01",
+          "solutionCatalogRgName": "DE-RG-SolutionCatalog-01",
+          "coreHubVnetRgName": "DE-RG-DEPRDINTVNET001",
+          "coreHubVnetName": "DEPRDINTVNET001",
+          "hubSubnet01Name": "DEPRD-INT-VM-Core01",
+          "hubSubnet02Name": "DEPRD-INT-FW-Management",
+          "hubSubnet03Name": "DEPRD-INT-FW-InternetTransit",
+          "hubRt01": "DEPRD-INT-VM-Core0X-RT",
+          "hubRt02": "DEPRD-GatewaySubnet-RT",
+          "keyVaultInitialAccessGroupObjectId": "e7d1d2af-2a56-4c6c-a9ae-972e922d329f"
+        },
+        "virtualMachines": {
+          "joinDomain": true,
+          "configureSCOM": false
+        }
+      }
+    },
+    "environmentConfig": "[variables('$fxv#0')]",
+    "sqlServerPrivateEndpointName": "[format('PE_{0}', parameters('name'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "deploy-sqlServerRg",
+      "location": "[deployment().location]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "name": {
+            "value": "[parameters('resourceGroupName')]"
+          },
+          "location": {
+            "value": "[variables('environmentConfig')[parameters('environmentType')].azure.location]"
+          },
+          "changeId": {
+            "value": "[parameters('changeId')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.11.1.770",
+              "templateHash": "9098661298326108952"
+            }
+          },
+          "parameters": {
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify name of Resource Group"
+              }
+            },
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify location of the Resource Group"
+              }
+            },
+            "changeId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the number of the respective Change"
+              }
+            },
+            "lifecycle": {
+              "type": "object",
+              "defaultValue": {
+                "runWindow": "bogus",
+                "autoStart": false,
+                "expiresOn": ""
+              },
+              "metadata": {
+                "description": "Specify the resource lifecycle settings. Provide object with properties [string]runWindow, [bool]autoStart,[string]expiresOn"
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Resources/resourceGroups",
+              "apiVersion": "2021-04-01",
+              "name": "[parameters('name')]",
+              "location": "[parameters('location')]",
+              "tags": {
+                "ChangeId": "[parameters('changeId')]",
+                "rlc": "[if(equals(parameters('lifecycle').runWindow, 'bogus'), '', string(parameters('lifecycle')))]"
+              }
+            }
+          ],
+          "outputs": {
+            "resId": {
+              "type": "string",
+              "value": "[subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('name'))]"
+            },
+            "res": {
+              "type": "object",
+              "value": "[reference(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('name')), '2021-04-01', 'full')]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "deploy-sqlServer",
+      "resourceGroup": "[parameters('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "administratorAadGroupName": {
+            "value": "[parameters('sqlAadAdministratorGroupName')]"
+          },
+          "administratorAadGroupId": {
+            "value": "[parameters('sqlAadAdministratorGroupObjectId')]"
+          },
+          "changeId": {
+            "value": "[parameters('changeId')]"
+          },
+          "lawsResourceId": {
+            "value": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('environmentConfig')[parameters('environmentType')].azure.coreServicesSubscriptionId, variables('environmentConfig')[parameters('environmentType')].azure.coreServicesResourceGroupName), 'Microsoft.OperationalInsights/workspaces', variables('environmentConfig')[parameters('environmentType')].azure.coreServicesLawsName)]"
+          },
+          "name": {
+            "value": "[parameters('name')]"
+          },
+          "location": {
+            "value": "[variables('environmentConfig')[parameters('environmentType')].azure.location]"
+          },
+          "vaStorageAccountName": {
+            "value": "[parameters('vaStorageAccountName')]"
+          },
+          "vaStorageAccountContainerName": {
+            "value": "[parameters('vaStorageAccountContainerName')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.11.1.770",
+              "templateHash": "18412373455697741705"
+            }
+          },
+          "parameters": {
+            "changeId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the number of the respective Change"
+              }
+            },
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the name of the Sql server"
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "Specify location of the Container Registry"
+              }
+            },
+            "administratorAadGroupName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the Name the Azure AD group that will have administrative permissions on the sql server"
+              }
+            },
+            "administratorAadGroupId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the id the Azure AD group that will have administrative permissions on the sql server"
+              }
+            },
+            "tdeSettings": {
+              "type": "object",
+              "defaultValue": {
+                "enabled": false,
+                "keyVaultResourceId": "bogus",
+                "keyName": "bogus"
+              },
+              "metadata": {
+                "description": "Specify the transperant data encryption with customer managed key settings. Expected properties are: enabled, keyVaultResourceId, keyName, sqlServerPrincipalId"
+              }
+            },
+            "vaStorageAccountName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the storage account for your vulnerability reports."
+              }
+            },
+            "vaStorageAccountContainerName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the blob container where your vulnerability reports will be stored."
+              }
+            },
+            "lawsResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the resource id of the log analytics workspace that will be used for diagnostic purposes"
+              }
+            }
+          },
+          "variables": {
+            "lawName": "[split(parameters('lawsResourceId'), '/')[8]]",
+            "lawResourceGroup": "[split(parameters('lawsResourceId'), '/')[4]]",
+            "lawSubscriptionId": "[split(parameters('lawsResourceId'), '/')[2]]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Sql/servers",
+              "apiVersion": "2021-11-01",
+              "name": "[parameters('name')]",
+              "location": "[parameters('location')]",
+              "tags": {
+                "changeId": "[parameters('changeId')]"
+              },
+              "properties": {
+                "administrators": {
+                  "administratorType": "ActiveDirectory",
+                  "azureADOnlyAuthentication": true,
+                  "principalType": "Group",
+                  "login": "[parameters('administratorAadGroupName')]",
+                  "sid": "[parameters('administratorAadGroupId')]",
+                  "tenantId": "[tenant().tenantId]"
+                },
+                "keyId": "[if(parameters('tdeSettings').enabled, reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('tdeSettings').keyVaultResourceId, '/')[2], split(parameters('tdeSettings').keyVaultResourceId, '/')[4]), 'Microsoft.KeyVault/vaults/keys', split(parameters('tdeSettings').keyVaultResourceId, '/')[8], parameters('tdeSettings').keyName), '2023-02-01').keyUriWithVersion, null())]",
+                "publicNetworkAccess": "Disabled",
+                "minimalTlsVersion": "1.2",
+                "restrictOutboundNetworkAccess": "Enabled"
+              },
+              "identity": {
+                "type": "SystemAssigned"
+              }
+            },
+            {
+              "condition": "[parameters('tdeSettings').enabled]",
+              "type": "Microsoft.Sql/servers/encryptionProtector",
+              "apiVersion": "2021-11-01",
+              "name": "[format('{0}/{1}', parameters('name'), 'current')]",
+              "properties": {
+                "autoRotationEnabled": true,
+                "serverKeyType": "AzureKeyVault",
+                "serverKeyName": "[if(parameters('tdeSettings').enabled, format('{0}_{1}_{2}', split(parameters('tdeSettings').keyVaultResourceId, '/')[8], parameters('tdeSettings').keyName, split(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('tdeSettings').keyVaultResourceId, '/')[2], split(parameters('tdeSettings').keyVaultResourceId, '/')[4]), 'Microsoft.KeyVault/vaults/keys', split(parameters('tdeSettings').keyVaultResourceId, '/')[8], parameters('tdeSettings').keyName), '2023-02-01').keyUriWithVersion, '/')[5]), null())]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('name'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Sql/servers/outboundFirewallRules",
+              "apiVersion": "2021-11-01",
+              "name": "[format('{0}/{1}', parameters('name'), format('{0}.blob.core.windows.net', parameters('vaStorageAccountName')))]",
+              "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('name'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Sql/servers/databases",
+              "apiVersion": "2021-11-01",
+              "name": "[format('{0}/{1}', parameters('name'), 'master')]",
+              "location": "[parameters('location')]",
+              "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('name'))]"
+              ]
+            },
+            {
+              "type": "microsoft.insights/diagnosticSettings",
+              "apiVersion": "2016-09-01",
+              "scope": "[format('Microsoft.Sql/servers/{0}/databases/{1}', parameters('name'), 'master')]",
+              "name": "service",
+              "location": "[parameters('location')]",
+              "properties": {
+                "workspaceId": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('lawSubscriptionId'), variables('lawResourceGroup')), 'Microsoft.OperationalInsights/workspaces', variables('lawName'))]",
+                "logs": [
+                  {
+                    "category": "SQLSecurityAuditEvents",
+                    "enabled": true,
+                    "retentionPolicy": {
+                      "days": 0,
+                      "enabled": false
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('name'), 'master')]"
+              ]
+            },
+            {
+              "type": "Microsoft.Sql/servers/auditingSettings",
+              "apiVersion": "2021-11-01",
+              "name": "[format('{0}/{1}', parameters('name'), 'default')]",
+              "properties": {
+                "state": "Enabled",
+                "auditActionsAndGroups": [
+                  "BATCH_COMPLETED_GROUP",
+                  "SUCCESSFUL_DATABASE_AUTHENTICATION_GROUP",
+                  "FAILED_DATABASE_AUTHENTICATION_GROUP"
+                ],
+                "isAzureMonitorTargetEnabled": true
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('name'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Sql/servers/securityAlertPolicies",
+              "apiVersion": "2021-11-01",
+              "name": "[format('{0}/{1}', parameters('name'), 'sqlServerDefenderSettings')]",
+              "properties": {
+                "state": "Enabled"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('name'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Sql/servers/vulnerabilityAssessments",
+              "apiVersion": "2021-11-01",
+              "name": "[format('{0}/{1}', parameters('name'), 'default')]",
+              "properties": {
+                "recurringScans": {
+                  "isEnabled": true
+                },
+                "storageContainerPath": "[format('https://{0}.blob.core.windows.net/{1}', parameters('vaStorageAccountName'), parameters('vaStorageAccountContainerName'))]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('name'))]",
+                "[resourceId('Microsoft.Sql/servers/securityAlertPolicies', parameters('name'), 'sqlServerDefenderSettings')]"
+              ]
+            }
+          ],
+          "outputs": {
+            "resId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Sql/servers', parameters('name'))]"
+            },
+            "res": {
+              "type": "object",
+              "value": "[reference(resourceId('Microsoft.Sql/servers', parameters('name')), '2021-11-01', 'full')]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/deployments', 'deploy-sqlServerRg')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "update-keyVaultAccessPolicy",
+      "subscriptionId": "[split(parameters('tdeKeyVaultResourceId'), '/')[2]]",
+      "resourceGroup": "[split(parameters('tdeKeyVaultResourceId'), '/')[4]]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "keyVaultName": {
+            "value": "[split(parameters('tdeKeyVaultResourceId'), '/')[8]]"
+          },
+          "changeType": {
+            "value": "add"
+          },
+          "accessPolicies": {
+            "value": [
+              {
+                "tenantId": "[tenant().tenantId]",
+                "objectId": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'deploy-sqlServer')).outputs.res.value.identity.principalId]",
+                "permissions": {
+                  "keys": [
+                    "Get",
+                    "WrapKey",
+                    "UnwrapKey"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.11.1.770",
+              "templateHash": "14663550845447787561"
+            }
+          },
+          "parameters": {
+            "keyVaultName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify KeyVault name"
+              }
+            },
+            "accessPolicies": {
+              "type": "array",
+              "metadata": {
+                "description": "Specify access policies"
+              }
+            },
+            "changeType": {
+              "type": "string",
+              "allowedValues": [
+                "add",
+                "remove",
+                "replace"
+              ],
+              "metadata": {
+                "description": "Specify the type of access policy change to make, add, remove, or replace"
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.KeyVault/vaults/accessPolicies",
+              "apiVersion": "2022-07-01",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), parameters('changeType'))]",
+              "properties": {
+                "accessPolicies": "[parameters('accessPolicies')]"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'deploy-sqlServer')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "update-sqlServer",
+      "resourceGroup": "[parameters('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "administratorAadGroupName": {
+            "value": "[parameters('sqlAadAdministratorGroupName')]"
+          },
+          "administratorAadGroupId": {
+            "value": "[parameters('sqlAadAdministratorGroupObjectId')]"
+          },
+          "changeId": {
+            "value": "[parameters('changeId')]"
+          },
+          "lawsResourceId": {
+            "value": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('environmentConfig')[parameters('environmentType')].azure.coreServicesSubscriptionId, variables('environmentConfig')[parameters('environmentType')].azure.coreServicesResourceGroupName), 'Microsoft.OperationalInsights/workspaces', variables('environmentConfig')[parameters('environmentType')].azure.coreServicesLawsName)]"
+          },
+          "name": {
+            "value": "[parameters('name')]"
+          },
+          "location": {
+            "value": "[variables('environmentConfig')[parameters('environmentType')].azure.location]"
+          },
+          "vaStorageAccountName": {
+            "value": "[parameters('vaStorageAccountName')]"
+          },
+          "vaStorageAccountContainerName": {
+            "value": "[parameters('vaStorageAccountContainerName')]"
+          },
+          "tdeSettings": {
+            "value": {
+              "enabled": true,
+              "keyVaultResourceId": "[parameters('tdeKeyVaultResourceId')]",
+              "keyName": "[parameters('tdeKeyVaultKeyName')]"
+            }
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.11.1.770",
+              "templateHash": "18412373455697741705"
+            }
+          },
+          "parameters": {
+            "changeId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the number of the respective Change"
+              }
+            },
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the name of the Sql server"
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "Specify location of the Container Registry"
+              }
+            },
+            "administratorAadGroupName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the Name the Azure AD group that will have administrative permissions on the sql server"
+              }
+            },
+            "administratorAadGroupId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the id the Azure AD group that will have administrative permissions on the sql server"
+              }
+            },
+            "tdeSettings": {
+              "type": "object",
+              "defaultValue": {
+                "enabled": false,
+                "keyVaultResourceId": "bogus",
+                "keyName": "bogus"
+              },
+              "metadata": {
+                "description": "Specify the transperant data encryption with customer managed key settings. Expected properties are: enabled, keyVaultResourceId, keyName, sqlServerPrincipalId"
+              }
+            },
+            "vaStorageAccountName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the storage account for your vulnerability reports."
+              }
+            },
+            "vaStorageAccountContainerName": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the blob container where your vulnerability reports will be stored."
+              }
+            },
+            "lawsResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the resource id of the log analytics workspace that will be used for diagnostic purposes"
+              }
+            }
+          },
+          "variables": {
+            "lawName": "[split(parameters('lawsResourceId'), '/')[8]]",
+            "lawResourceGroup": "[split(parameters('lawsResourceId'), '/')[4]]",
+            "lawSubscriptionId": "[split(parameters('lawsResourceId'), '/')[2]]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Sql/servers",
+              "apiVersion": "2021-11-01",
+              "name": "[parameters('name')]",
+              "location": "[parameters('location')]",
+              "tags": {
+                "changeId": "[parameters('changeId')]"
+              },
+              "properties": {
+                "administrators": {
+                  "administratorType": "ActiveDirectory",
+                  "azureADOnlyAuthentication": true,
+                  "principalType": "Group",
+                  "login": "[parameters('administratorAadGroupName')]",
+                  "sid": "[parameters('administratorAadGroupId')]",
+                  "tenantId": "[tenant().tenantId]"
+                },
+                "keyId": "[if(parameters('tdeSettings').enabled, reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('tdeSettings').keyVaultResourceId, '/')[2], split(parameters('tdeSettings').keyVaultResourceId, '/')[4]), 'Microsoft.KeyVault/vaults/keys', split(parameters('tdeSettings').keyVaultResourceId, '/')[8], parameters('tdeSettings').keyName), '2023-02-01').keyUriWithVersion, null())]",
+                "publicNetworkAccess": "Disabled",
+                "minimalTlsVersion": "1.2",
+                "restrictOutboundNetworkAccess": "Enabled"
+              },
+              "identity": {
+                "type": "SystemAssigned"
+              }
+            },
+            {
+              "condition": "[parameters('tdeSettings').enabled]",
+              "type": "Microsoft.Sql/servers/encryptionProtector",
+              "apiVersion": "2021-11-01",
+              "name": "[format('{0}/{1}', parameters('name'), 'current')]",
+              "properties": {
+                "autoRotationEnabled": true,
+                "serverKeyType": "AzureKeyVault",
+                "serverKeyName": "[if(parameters('tdeSettings').enabled, format('{0}_{1}_{2}', split(parameters('tdeSettings').keyVaultResourceId, '/')[8], parameters('tdeSettings').keyName, split(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('tdeSettings').keyVaultResourceId, '/')[2], split(parameters('tdeSettings').keyVaultResourceId, '/')[4]), 'Microsoft.KeyVault/vaults/keys', split(parameters('tdeSettings').keyVaultResourceId, '/')[8], parameters('tdeSettings').keyName), '2023-02-01').keyUriWithVersion, '/')[5]), null())]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('name'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Sql/servers/outboundFirewallRules",
+              "apiVersion": "2021-11-01",
+              "name": "[format('{0}/{1}', parameters('name'), format('{0}.blob.core.windows.net', parameters('vaStorageAccountName')))]",
+              "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('name'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Sql/servers/databases",
+              "apiVersion": "2021-11-01",
+              "name": "[format('{0}/{1}', parameters('name'), 'master')]",
+              "location": "[parameters('location')]",
+              "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('name'))]"
+              ]
+            },
+            {
+              "type": "microsoft.insights/diagnosticSettings",
+              "apiVersion": "2016-09-01",
+              "scope": "[format('Microsoft.Sql/servers/{0}/databases/{1}', parameters('name'), 'master')]",
+              "name": "service",
+              "location": "[parameters('location')]",
+              "properties": {
+                "workspaceId": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('lawSubscriptionId'), variables('lawResourceGroup')), 'Microsoft.OperationalInsights/workspaces', variables('lawName'))]",
+                "logs": [
+                  {
+                    "category": "SQLSecurityAuditEvents",
+                    "enabled": true,
+                    "retentionPolicy": {
+                      "days": 0,
+                      "enabled": false
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('name'), 'master')]"
+              ]
+            },
+            {
+              "type": "Microsoft.Sql/servers/auditingSettings",
+              "apiVersion": "2021-11-01",
+              "name": "[format('{0}/{1}', parameters('name'), 'default')]",
+              "properties": {
+                "state": "Enabled",
+                "auditActionsAndGroups": [
+                  "BATCH_COMPLETED_GROUP",
+                  "SUCCESSFUL_DATABASE_AUTHENTICATION_GROUP",
+                  "FAILED_DATABASE_AUTHENTICATION_GROUP"
+                ],
+                "isAzureMonitorTargetEnabled": true
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('name'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Sql/servers/securityAlertPolicies",
+              "apiVersion": "2021-11-01",
+              "name": "[format('{0}/{1}', parameters('name'), 'sqlServerDefenderSettings')]",
+              "properties": {
+                "state": "Enabled"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('name'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Sql/servers/vulnerabilityAssessments",
+              "apiVersion": "2021-11-01",
+              "name": "[format('{0}/{1}', parameters('name'), 'default')]",
+              "properties": {
+                "recurringScans": {
+                  "isEnabled": true
+                },
+                "storageContainerPath": "[format('https://{0}.blob.core.windows.net/{1}', parameters('vaStorageAccountName'), parameters('vaStorageAccountContainerName'))]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('name'))]",
+                "[resourceId('Microsoft.Sql/servers/securityAlertPolicies', parameters('name'), 'sqlServerDefenderSettings')]"
+              ]
+            }
+          ],
+          "outputs": {
+            "resId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Sql/servers', parameters('name'))]"
+            },
+            "res": {
+              "type": "object",
+              "value": "[reference(resourceId('Microsoft.Sql/servers', parameters('name')), '2021-11-01', 'full')]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('tdeKeyVaultResourceId'), '/')[2], split(parameters('tdeKeyVaultResourceId'), '/')[4]), 'Microsoft.Resources/deployments', 'update-keyVaultAccessPolicy')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "deploy-sqlServerPrivateEndpoint",
+      "resourceGroup": "[parameters('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "name": {
+            "value": "[variables('sqlServerPrivateEndpointName')]"
+          },
+          "location": {
+            "value": "[variables('environmentConfig')[parameters('environmentType')].azure.location]"
+          },
+          "privateLinkGroupId": {
+            "value": [
+              "sqlServer"
+            ]
+          },
+          "privateLinkResourceId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'deploy-sqlServer')).outputs.resId.value]"
+          },
+          "subnetResourceId": {
+            "value": "[parameters('subnetResourceId')]"
+          },
+          "privateDnsZoneResourceId": {
+            "value": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', variables('environmentConfig')[parameters('environmentType')].azure.coreServicesSubscriptionId, variables('environmentConfig')[parameters('environmentType')].azure.dnsZonesResourceGroupName), 'Microsoft.Network/privateDnsZones', format('privatelink{0}', environment().suffixes.sqlServerHostname))]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.11.1.770",
+              "templateHash": "5579937947801035933"
+            }
+          },
+          "parameters": {
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify name of Container Registry"
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "Specify location of the Container Registry"
+              }
+            },
+            "subnetResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the resourceId of the subnet where private endpoint will be created"
+              }
+            },
+            "privateLinkResourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "Specify the resourceId of the resource this private endpoints connects to"
+              }
+            },
+            "privateLinkGroupId": {
+              "type": "array",
+              "metadata": {
+                "description": "Specify the groupIds of the resource this private endpoints connects to"
+              }
+            },
+            "privateDnsZoneResourceId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Specify the resourceId of private dns zone if you want to automatically create A record there"
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/privateEndpoints",
+              "apiVersion": "2022-01-01",
+              "name": "[parameters('name')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "subnet": {
+                  "id": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('subnetResourceId'), '/')[2], split(parameters('subnetResourceId'), '/')[4]), 'Microsoft.Network/virtualNetworks/subnets', split(parameters('subnetResourceId'), '/')[8], split(parameters('subnetResourceId'), '/')[10])]"
+                },
+                "privateLinkServiceConnections": [
+                  {
+                    "name": "[parameters('name')]",
+                    "properties": {
+                      "groupIds": "[parameters('privateLinkGroupId')]",
+                      "privateLinkServiceId": "[parameters('privateLinkResourceId')]"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "condition": "[not(empty(parameters('privateDnsZoneResourceId')))]",
+              "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+              "apiVersion": "2022-01-01",
+              "name": "[format('{0}/{1}', parameters('name'), 'default')]",
+              "properties": {
+                "privateDnsZoneConfigs": [
+                  {
+                    "name": "[format('{0}-{1}', parameters('name'), split(parameters('privateDnsZoneResourceId'), '/')[8])]",
+                    "properties": {
+                      "privateDnsZoneId": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', split(parameters('privateDnsZoneResourceId'), '/')[2], split(parameters('privateDnsZoneResourceId'), '/')[4]), 'Microsoft.Network/privateDnsZones', split(parameters('privateDnsZoneResourceId'), '/')[8])]"
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateEndpoints', parameters('name'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "resId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Network/privateEndpoints', parameters('name'))]"
+            },
+            "res": {
+              "type": "object",
+              "value": "[reference(resourceId('Microsoft.Network/privateEndpoints', parameters('name')), '2022-01-01', 'full')]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'deploy-sqlServer')]"
+      ]
+    }
+  ]
+}

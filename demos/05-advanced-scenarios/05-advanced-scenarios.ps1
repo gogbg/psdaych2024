@@ -35,4 +35,6 @@ Update-PSPlaceholder -String '{
 
 #update json files with adaptation
 $someJsonFilePath = 'C:\events\psdaych2024\demos\05-advanced-scenarios\files\someJsonDocument.json'
-Update-PSPlaceholder -Path $someJsonFilePath -Values @{people = 'John' } -AdaptTo json
+Update-PSPlaceholder -Path $someJsonFilePath -Values @{
+    people = @('John', 'Alice', 'Bob') 
+} -AdaptTo json
