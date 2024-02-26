@@ -8,7 +8,7 @@ Update-PSPlaceholder -String 'My name is {{FirstName}} {{LastName}}' -Values @{
 }
 
 #should update all placeholders in the file sampleFile.txt
-$filePath = 'C:\events\psdaysch\demos\01-how-placeholders-look-like\files\sampleFile.txt'
+$filePath = 'C:\events\psdaych2024\demos\01-how-placeholders-look-like\files\sampleFile.txt'
 Update-PSPlaceholder -Path $filePath -Values @{
   FirstName ='John'
   LastName  ='Dow'
@@ -17,7 +17,7 @@ Update-PSPlaceholder -Path $filePath -Values @{
 }
 
 #should update all placeholders in all files underneath the specified folder
-$folderPath = 'C:\events\psdaysch\demos\01-how-placeholders-look-like\files\someFolder'
+$folderPath = 'C:\events\psdaych2024\demos\01-how-placeholders-look-like\files\someFolder'
 Update-PSPlaceholder -Path $folderPath -Values @{
   FirstName ='John'
   LastName  ='Dow'
