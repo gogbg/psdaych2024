@@ -24,3 +24,12 @@ Update-PSPlaceholder -Path $folderPath -Values @{
   yearInSchool = 'second'
   today = get-date
 }
+
+#should update all placeholders in all files underneath the specified folder and its subfolders in both the content and the file names
+$folderPath = 'C:\events\psdaych2024\demos\01-how-placeholders-look-like\files\someOtherFolder'
+Update-PSPlaceholder -Path $folderPath -Values @{
+  FirstName ='John'
+  LastName  ='Dow'
+  yearInSchool = 'second'
+  today = get-date
+}
