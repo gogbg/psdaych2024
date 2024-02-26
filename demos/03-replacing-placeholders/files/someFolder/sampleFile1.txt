@@ -1,0 +1,3 @@
+My name is {{FirstName}} {{LastName}}
+Today is: {{today}}
+This is my {{yearInSchool}} year in school.

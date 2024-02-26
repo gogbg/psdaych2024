@@ -1,0 +1,5 @@
+{
+    "FirstName": "John",
+    "LastName": "Dow",
+    "Colleagues": "{{people}}"
+}
