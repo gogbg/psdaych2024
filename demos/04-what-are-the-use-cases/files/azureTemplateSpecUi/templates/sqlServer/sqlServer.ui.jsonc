@@ -43,7 +43,7 @@
             {
               "name": "resourceScope",
               "type": "Microsoft.Common.ResourceScope",
-              "subscription": ["sub1","sub2"],
+              "subscription": "{{allowedDeploymentSubscriptions}}",
               "location": {
                 "label": "Location",
                 "allowedValues": [
@@ -56,11 +56,11 @@
               "type": "Microsoft.Common.TextBox",
               "label": "Change ID",
               "defaultValue": "",
-              "toolTip": "The ID of the Change this deployment is approved by. ID must follow the format: XX.XXXX (e.g. 23.10027)",
+              "toolTip": "The ID of the Change this deployment is approved by. {{& $uiStrings.resourceTags.changeId.validationMessage}}",
               "constraints": {
                 "required": true,
-                "regex": "^\\d{2}.\\d{4}$",
-                "validationMessage": "ID must follow the format: XX.XXXX (e.g. 23.10027)"
+                "regex": "{{& $uiStrings.resourceTags.changeId.regex}}",
+                "validationMessage": "{{& $uiStrings.resourceTags.changeId.validationMessage}}"
               },
               "visible": true
             },
@@ -68,11 +68,11 @@
               "name": "resourceGroupName",
               "type": "Microsoft.Common.TextBox",
               "label": "Resource Group Name",
-              "toolTip": "The name of the Resource Group where Synapse Workspace will be deployed, it will be deployed if not exist. Name can contain: underscores, hyphens, periods, letters, digits. It cannot be longer than 90 characters",
+              "toolTip": "The name of the Resource Group where Synapse Workspace will be deployed, it will be deployed if not exist. {{& $uiStrings.resourceGroup.name.validationMessage}}",
               "constraints": {
                 "required": true,
-                "regex": "^[-\\w\\._\\(\\)]{1,90}$",
-                "validationMessage": "Name can contain: underscores, hyphens, periods, letters, digits. It cannot be longer than 90 characters"
+                "regex": "{{& $uiStrings.resourceGroup.name.regex}}",
+                "validationMessage": "{{& $uiStrings.resourceGroup.name.validationMessage}}"
               },
               "visible": true
             },
@@ -81,11 +81,11 @@
               "type": "Microsoft.Common.TextBox",
               "label": "SQL Server Name",
               "defaultValue": "",
-              "toolTip": "The name of the SQL Server to be deployed. Your server name can contain only lowercase letters, numbers and hyphens '-', and it can't have more than 63 characters in length. Your server name can't start or end with hyphens '-'.",
+              "toolTip": "The name of the SQL Server to be deployed. {{& $uiStrings.sqlServer.name.validationMessage}}",
               "constraints": {
                 "required": true,
-                "regex": "^[a-z0-9](?!.*--)[a-z0-9-]{1,61}[a-z0-9]$",
-                "validationMessage": "Your server name can contain only lowercase letters, numbers and hyphens '-', and it can't have more than 63 characters in length. Your server name can't start or end with hyphens '-'."
+                "regex": "{{& $uiStrings.sqlServer.name.regex}}",
+                "validationMessage": "{{& $uiStrings.sqlServer.name.validationMessage}}"
               },
               "visible": true
             },
@@ -201,11 +201,11 @@
                   "type": "Microsoft.Common.TextBox",
                   "label": "Key Name",
                   "defaultValue": "",
-                  "toolTip": "The name of the Key for TDE. Name can contain: letters, numbers, hyphens. It can't start or end with hyphens. It cannot be longer than 64 characters",
+                  "toolTip": "The name of the Key for TDE. {{& $uiStrings.keyVault.keyName.validationMessage}}",
                   "constraints": {
                     "required": true,
-                    "regex": "^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]$",
-                    "validationMessage": "Name can contain: letters, numbers, hyphens. It can't start or end with hyphens. It cannot be longer than 64 characters"
+                    "regex": "{{& $uiStrings.keyVault.keyName.regex}}",
+                    "validationMessage": "{{& $uiStrings.keyVault.keyName.validationMessage}}"
                   },
                   "visible": true
                 }
@@ -313,7 +313,7 @@
         "subnetResourceId": "[steps('basics').privateAccess.subnetList]",
         "vaStorageAccountName": "[steps('basics').va.StorageAccountVASelector.name]",
         "vaStorageAccountContainerName": "[steps('basics').va.BlobStorageContainerVASelector]",
-        "environmentType": "dev"
+        "environmentType": "{{environmentType}}"
       },
       "kind": "Subscription",
       "location": "[steps('basics').resourceScope.location.name]",
