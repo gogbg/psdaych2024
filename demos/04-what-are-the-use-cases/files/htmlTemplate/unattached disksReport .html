@@ -193,11 +193,11 @@ div.WordSection1
 <table>
 <colgroup><col/><col/><col/></colgroup>
 <tr><th>Subscriptions analyzed count</th><th>Disks analyzed count</th><th>Disks unattached count</th></tr>
-<tr><td>{{& $disks.subscription | select -unique}}</td><td>{{& $disks.count}}</td><td>{{& ($disks | where -Property "isAttached").count}}</td></tr>
+<tr><td>{{& ($disks.subscription | select -unique).Count}}</td><td>{{& $disks.count}}</td><td>{{& ($disks | where -Property "isAttached").count}}</td></tr>
 </table>
 
 <h2><span style='mso-fareast-font-family:"Times New Roman"'>Unattached disks<o:p></o:p></span></h2>
-{{& $disks | ConvertTo-Html -Fragment}}
+{{& $disks | ConvertTo-Html -Fragment | out-string}}
 
 
 <h5><i><span style='mso-fareast-font-family:"Times New Roman"'>Created on:

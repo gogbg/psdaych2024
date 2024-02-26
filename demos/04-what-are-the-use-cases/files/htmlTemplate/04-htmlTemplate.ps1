@@ -33,5 +33,4 @@ Update-PSPlaceholder -Path $filePath -Values @{
             subscription = 'Subscription 1'
         }
     )
-} -AdaptTo html
-```
+}
