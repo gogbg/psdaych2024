@@ -7,7 +7,9 @@ $phValues = Get-Content -Path $uiStingsFilePath -Raw | ConvertFrom-Json -AsHasht
 #Get placeholders in all templates
 Get-PSPlaceholder -Path $templatesFolderPath | Format-Table name, type
 
-#force update placeholders without supplying all the values
+#update placeholders
 Update-PSPlaceholder -Path $templatesFolderPath -Values @{
     uiStrings = $phValues
+    environmentType = 'dev'
+    allowedDeploymentSubscriptions= @('sub1', 'sub2')
 } -AdaptTo json
