@@ -1,6 +1,7 @@
 $paramFolderPath = 'C:\events\psdaych2024\demos\04-what-are-the-use-cases\parameterFiles\sqlAndSW'
 
 #get placeholders in all parameter files
+cls
 Get-PSPlaceholder -Path $paramFolderPath | ft name, type, InFileCount, InFileNameCount
 
 #create temp folder for the updated parameter files

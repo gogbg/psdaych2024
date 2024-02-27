@@ -5,6 +5,7 @@ $templatesFolderPath = 'C:\events\psdaych2024\demos\04-what-are-the-use-cases\az
 $phValues = Get-Content -Path $uiStingsFilePath -Raw | ConvertFrom-Json -AsHashtable
 
 #Get placeholders in all templates
+cls
 Get-PSPlaceholder -Path $templatesFolderPath | Format-Table name, type
 
 #update placeholders
