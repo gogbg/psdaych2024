@@ -1,3 +1,11 @@
+#should install latest psplaceholders module from psgallery
+Install-PSResource -RequiredResource @{
+  'PsPlaceholders'         = @{
+    Version    = '0.1.3'
+    Repository = 'PSGallery'
+  }
+} -TrustRepository
+
 #should return: 'My name is John'
 Update-PSPlaceholder -String 'My name is {{FirstName}}' -Values @{FirstName='John'}
 
