@@ -1,0 +1,42 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "changeId": {
+      "value": ""
+    },
+    "synapseWorkspaceName": {
+      "value": "de-sw-{{project}}-{{environmentType}}-001"
+    },
+    "subnetResourceId": {
+      "value": "{{subnetId}}"
+    },
+    "resourceGroupName": {
+      "value": "{{rgName}}"
+    },
+    "synapseSqlAdministratorAadGroupObjectId": {
+      "value": "adminsGroupObjectId"
+    },
+    "datalakeName": {
+      "value": "{{storageAccountName}}"
+    },
+    "datalakeContainerName": {
+      "value": "{{storageAccountContainerName}}"
+    },
+    "vaStorgeaccountName": {
+      "value": "{{storageAccountName}}"
+    },
+    "vaStorgeaccountContainerName": {
+      "value": "{{storageAccountContainerName}}"
+    },
+    "managedResourceGroupName": {
+      "value": "{{managedRgName}}"
+    },
+    "encryptionKeyVaultResourceId": {
+      "value": "{{keyVaultId}}"
+    },
+    "encryptionKeyName": {
+      "value": "{{keyVaultKeyName}}"
+    }
+  }
+}

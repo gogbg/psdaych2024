@@ -1,5 +1,5 @@
-$uiStingsFilePath = 'C:\events\psdaych2024\demos\04-what-are-the-use-cases\files\azureTemplateSpecUi\config\uiStrings.jsonc'
-$templatesFolderPath = 'C:\events\psdaych2024\demos\04-what-are-the-use-cases\files\azureTemplateSpecUi\templates'
+$uiStingsFilePath = 'C:\events\psdaych2024\demos\04-what-are-the-use-cases\azureTemplateSpecUi\config\uiStrings.jsonc'
+$templatesFolderPath = 'C:\events\psdaych2024\demos\04-what-are-the-use-cases\azureTemplateSpecUi\templates'
 
 #Load the uiStrings as placeholder values
 $phValues = Get-Content -Path $uiStingsFilePath -Raw | ConvertFrom-Json -AsHashtable
@@ -21,9 +21,9 @@ $newAzTemplateSpecParams = @{
     Version              = '1.0.0'
     Description          = 'Test sql server'
     DisplayName          = 'Sql Server'
-    TemplateFile         = 'C:\events\psdaych2024\demos\04-what-are-the-use-cases\files\azureTemplateSpecUi\templates\sqlServer\sqlServer.json'
+    TemplateFile         = 'C:\events\psdaych2024\demos\04-what-are-the-use-cases\azureTemplateSpecUi\templates\sqlServer\sqlServer.json'
     VersionDescription   = 'Initial version'
     Location             = 'westeurope'
-    UIFormDefinitionFile = 'C:\events\psdaych2024\demos\04-what-are-the-use-cases\files\azureTemplateSpecUi\templates\sqlServer\sqlServer.ui.jsonc'
+    UIFormDefinitionFile = 'C:\events\psdaych2024\demos\04-what-are-the-use-cases\azureTemplateSpecUi\templates\sqlServer\sqlServer.ui.jsonc'
 }
 New-AzTemplateSpec @newAzTemplateSpecParams -ErrorAction Stop

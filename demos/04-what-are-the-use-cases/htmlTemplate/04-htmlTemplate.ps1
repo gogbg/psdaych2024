@@ -1,4 +1,4 @@
-$filePath = 'C:\events\psdaych2024\demos\04-what-are-the-use-cases\files\htmlTemplate\unattached disksReport.html'
+$filePath = 'C:\events\psdaych2024\demos\04-what-are-the-use-cases\htmlTemplate\unattached disksReport.html'
 Update-PSPlaceholder -Path $filePath -Values @{
     date  = Get-Date
     disks = @(
